@@ -90,7 +90,7 @@ namespace StudentGuide.API.Controllers
             catch (Exception ex)
             {
 
-                return StatusCode(500, new { error = "An unexpected error occurred. Please try again later." });
+                return StatusCode(500, ex);
             }
 
         }
@@ -144,7 +144,7 @@ namespace StudentGuide.API.Controllers
                     if (isUpdated)
                         return NoContent();
                     else
-                        return NotFound();
+                        return BadRequest("Faild to Update");
                 }
                 catch (Exception ex)
                 {

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.BLL.Dtos.Department
 {
-    class DepartmentEditDto
+    public class DepartmentEditDto
     {
+        public String DepartmentCode { get; set; } = string.Empty;
+        public String NameOfDepartment { get; set; } = string.Empty;
     }
 }

@@ -36,7 +36,7 @@ namespace StudentGuide.BLL.Services.Materials
 # region GetMaterialBYId
         public async Task<MaterialReadDto?> GetMaterialById(int id)
         {
-            Material? MaterialFromDb = await _unitOfWork.MaterialRepo.GetById(id);
+            Material? MaterialFromDb = await _unitOfWork.MaterialRepo.GetByIdAsync(id);
             if(MaterialFromDb is null) { return null; }
             MaterialReadDto material = new()
             {
@@ -93,7 +93,7 @@ namespace StudentGuide.BLL.Services.Materials
         #endregion
         public async Task<bool> DeleteMaterial(int id)
         {
-            Material deletedMaterial = await _unitOfWork.MaterialRepo.GetById(id);
+            Material? deletedMaterial = await _unitOfWork.MaterialRepo.GetByIdAsync(id);
             if(deletedMaterial is null)
             {
                 return false;
@@ -108,7 +108,7 @@ namespace StudentGuide.BLL.Services.Materials
 
         public async Task<bool> EditMaterial(MaterialEditDto materialEditDto)
         {
-            Material material = await _unitOfWork.MaterialRepo.GetById(materialEditDto.Id);
+            Material? material = await _unitOfWork.MaterialRepo.GetByIdAsync(materialEditDto.Id);
             if(material == null)
             {
                 return false;

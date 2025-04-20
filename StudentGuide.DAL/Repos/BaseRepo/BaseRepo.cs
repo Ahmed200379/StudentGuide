@@ -31,7 +31,12 @@ namespace StudentGuide.DAL.Repos.BaseRepo
             return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T?> GetByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T?> GetByIdAsync(string id)
         {
             return await _context.Set<T>().FindAsync(id);
         }

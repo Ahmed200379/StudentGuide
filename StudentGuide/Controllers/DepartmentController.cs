@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentGuide.BLL.Dtos.Department;
+using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.BLL.Services.Departments;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,18 +17,43 @@ namespace StudentGuide.API.Controllers
         {
             _departmentService = departmentService;
         }
-        // GET: api/<DepartmentController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("GetAllDepartments")]
+        public async Task<IActionResult> GetAllDepartments()
         {
-            return new string[] { "value1", "value2" };
-        }
+            try
+            {
+                IEnumerable<DepartmentReadDto> AllDepartmentFromDb = await _departmentService.GetAllDepartment();
+                if (AllDepartmentFromDb is null)
+                {
+                    return BadRequest();
+                }
+                return Ok(AllDepartmentFromDb);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
 
-        // GET api/<DepartmentController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        }
+        [HttpGet]
+        [Route("GetDepartmentById/{id}")]
+        public async Task<ActionResult<MaterialReadDto>> GetDepartmentById(String id)
         {
-            return "value";
+            try
+            {
+                DepartmentReadDto? department = await _departmentService.GetDepartmentById(id);
+                if (department == null)
+                {
+                    return NotFound();
+                }
+                return Ok(department);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
         }
 
         [HttpPost("DashBoard/AddDepartment")]
@@ -51,15 +78,46 @@ namespace StudentGuide.API.Controllers
         }
 
         // PUT api/<DepartmentController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut]
+        [Route("DashBoard/UpdateDepartment")]
+        public async Task<IActionResult> UpdateDepartment([FromBody] DepartmentEditDto departmentEditDto)
         {
+            if (!string.IsNullOrWhiteSpace(departmentEditDto.NameOfDepartment) && !string.IsNullOrWhiteSpace(departmentEditDto.DepartmentCode))
+            {
+                try
+                {
+                    bool isUpdated = await _departmentService.UpdateDepartment(departmentEditDto);
+                    if (isUpdated)
+                        return Ok();
+                    return BadRequest("Faild to update");
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
+            }
+            else
+            {
+                return BadRequest("eaither Code or name can not be null");
+            }
+          
         }
 
-        // DELETE api/<DepartmentController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        [Route("Dashboard/DeleteDepartment/{id}")]
+        public async Task<IActionResult> DeleteDepartment(string id)
         {
+
+            try
+            {
+                bool isDeleted = await _departmentService.DeleteDepartment(id);
+                return isDeleted ? NoContent() : BadRequest("Failed to delete Department.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
         }
     }
 }

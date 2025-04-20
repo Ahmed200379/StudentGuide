@@ -10,5 +10,9 @@ namespace StudentGuide.BLL.Services.Departments
    public interface IDepartmentService
     {
         public Task<bool> AddDepartment(DepartmentAddDto department);
+        public Task<bool> UpdateDepartment(DepartmentEditDto department);
+        public Task<bool> DeleteDepartment(string id);
+        public Task<List<DepartmentReadDto>> GetAllDepartment();   
+        public Task<DepartmentReadDto?> GetDepartmentById(string id);
     }
 }

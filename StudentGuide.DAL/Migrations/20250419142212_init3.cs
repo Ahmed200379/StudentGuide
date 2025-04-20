@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentGuide.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,8 @@ namespace StudentGuide.DAL.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,7 +49,7 @@ namespace StudentGuide.DAL.Migrations
                     InstructorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Youtube = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Drive = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -58,8 +59,7 @@ namespace StudentGuide.DAL.Migrations
                         name: "FK_Materials_Courses_CourseCode",
                         column: x => x.CourseCode,
                         principalTable: "Courses",
-                        principalColumn: "Code",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Code");
                 });
 
             migrationBuilder.CreateTable(

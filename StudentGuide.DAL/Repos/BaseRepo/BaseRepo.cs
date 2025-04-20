@@ -36,10 +36,10 @@ namespace StudentGuide.DAL.Repos.BaseRepo
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task Update(T entity)
+        public Task Update(T entity)
         {
             _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
     }
 }

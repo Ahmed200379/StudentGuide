@@ -1,4 +1,7 @@
-﻿using StudentGuide.BLL.Services.Materials;
+﻿using StudentGuide.BLL.Services.HashId;
+using StudentGuide.BLL.Services.Materials;
+using StudentGuide.BLL.Services.Departments;
+using StudentGuide.DAL.Repos.DepartmentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
 using StudentGuide.DAL.UnitOfWork;
 using System.Collections;
@@ -12,6 +15,9 @@ namespace StudentGuide.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IMaterialService, MaterialService>();
             services.AddScoped<IMaterialRepo, MaterialRepo>();
+            services.AddScoped<IDepartmentRepo, DepartmentRepo>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<HashIdService>();
 
         }
     }

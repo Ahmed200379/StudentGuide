@@ -12,8 +12,8 @@ using StudentGuide.DAL.Data.Context;
 namespace StudentGuide.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250317220440_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250419142212_init3")]
+    partial class init3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,6 +94,10 @@ namespace StudentGuide.DAL.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Code");
 
                     b.ToTable("Departments");
@@ -108,7 +112,6 @@ namespace StudentGuide.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CourseCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Drive")
@@ -258,9 +261,7 @@ namespace StudentGuide.DAL.Migrations
                 {
                     b.HasOne("StudentGuide.DAL.Data.Models.Course", "Course")
                         .WithMany("Materials")
-                        .HasForeignKey("CourseCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseCode");
 
                     b.Navigation("Course");
                 });

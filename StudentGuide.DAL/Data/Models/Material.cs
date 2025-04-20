@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace StudentGuide.DAL.Data.Models
 {
@@ -15,8 +16,9 @@ namespace StudentGuide.DAL.Data.Models
         public String InstructorName { get; set; } = string.Empty;
         public string? Youtube { get; set; }
         public string? Drive { get; set; }
+        [JsonIgnore]
         public virtual Course? Course { get; set; }
         [ForeignKey("Course")]
-        public string CourseCode { get; set; }
+        public string? CourseCode { get; set; }
     }
 }

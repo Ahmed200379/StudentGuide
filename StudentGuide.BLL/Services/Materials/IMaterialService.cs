@@ -11,10 +11,11 @@ namespace StudentGuide.BLL.Services.Materials
     {
         public Task<IEnumerable<MaterialReadDto>> GetAllMaterial();
         public Task<bool> AddNewMaterial(MaterialAddDto newmaterial);
-        public Task EditMaterial(int id);
+        public Task<bool> EditMaterial(MaterialEditDto material);
         public Task<MaterialReadDto?> GetMaterialById(int id);
         public Task<MaterialReadDto?> GetMaterialBYname(String Name);
-        public Task DeleteMaterial(int id);
-        
+        public Task<bool> DeleteMaterial(int id);
+        public Task<MaterialReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage);
+        public Task<List<MaterialReadDto>> Search(String Keyword);
     }
 }

@@ -4,6 +4,9 @@ using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Http.HttpResults;
+using FuzzySharp;
+using Microsoft.EntityFrameworkCore;
+
 namespace StudentGuide.BLL.Services.Materials
 {
    public class MaterialService : IMaterialService
@@ -25,7 +28,8 @@ namespace StudentGuide.BLL.Services.Materials
                     Name = p.Name,
                     Instructor=p.InstructorName,
                     DriveLink = p.Drive,
-                    YoutubeLink = p.Youtube
+                    YoutubeLink = p.Youtube,
+                    MaterialCode=p.CourseCode
                 });
             return AllMaterial;
         }
@@ -40,8 +44,8 @@ namespace StudentGuide.BLL.Services.Materials
                 Name = MaterialFromDb.Name,
                 Instructor = MaterialFromDb.InstructorName,
                 DriveLink = MaterialFromDb.Drive,
-                YoutubeLink = MaterialFromDb.Youtube
-
+                YoutubeLink = MaterialFromDb.Youtube,
+                MaterialCode=MaterialFromDb.CourseCode
             };
             return material;
         }
@@ -55,7 +59,8 @@ namespace StudentGuide.BLL.Services.Materials
                 DriveLink = MaterialFromDb.Drive,
                 Instructor = MaterialFromDb.InstructorName,
                 Name = MaterialFromDb.Name,
-                YoutubeLink = MaterialFromDb.Youtube
+                YoutubeLink = MaterialFromDb.Youtube,
+                MaterialCode = MaterialFromDb.CourseCode
             };
             return material;
         }
@@ -65,6 +70,7 @@ namespace StudentGuide.BLL.Services.Materials
         {
             try
             {
+      
                 Material material = new()
                 {
                     Name = NewMaterial.Name,
@@ -85,14 +91,93 @@ namespace StudentGuide.BLL.Services.Materials
           
         }
         #endregion
-        public Task DeleteMaterial(int id)
+        public async Task<bool> DeleteMaterial(int id)
         {
-            throw new NotImplementedException();
+            Material deletedMaterial = await _unitOfWork.MaterialRepo.GetById(id);
+            if(deletedMaterial is null)
+            {
+                return false;
+            }
+            else
+            {
+               await _unitOfWork.MaterialRepo.Delete(deletedMaterial);
+                int issaved = await _unitOfWork.Complete();
+                return issaved > 0;
+            }
         }
 
-        public Task EditMaterial(int id)
+        public async Task<bool> EditMaterial(MaterialEditDto materialEditDto)
         {
-            throw new NotImplementedException();
+            Material material = await _unitOfWork.MaterialRepo.GetById(materialEditDto.Id);
+            if(material == null)
+            {
+                return false;
+            }
+            else
+            {
+                material.Name = materialEditDto.Name;
+                material.InstructorName = materialEditDto.Instructor;
+                material.Youtube = materialEditDto.Youtube;
+                material.Drive = materialEditDto.Drive;
+                material.CourseCode = materialEditDto.Code;
+
+               await _unitOfWork.MaterialRepo.Update(material);
+                int isupdated = await _unitOfWork.Complete();
+                return isupdated > 0;
+            }
+        }
+
+        public async Task<MaterialReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage)
+        {
+            var materials = await _unitOfWork.MaterialRepo.GetAllMaterialsInPagnation(page, countPerPage);
+            var materialDto=materials.Select(p => new MaterialReadDto
+            {
+                Id=p.Id,
+                Instructor=p.InstructorName,
+                Name=p.Name,
+                DriveLink=p.Drive,
+                YoutubeLink=p.Youtube,
+                MaterialCode=p.CourseCode
+            }).ToList();
+            int totalCount = await _unitOfWork.MaterialRepo.TotalCount();
+            return new MaterialReadPagnationDto
+            {
+                Materials = materialDto,
+                TotalCount = totalCount
+            }; 
+        }
+
+        public async Task<List<MaterialReadDto>> Search(string Keyword)
+        {
+            var materials = await _unitOfWork.MaterialRepo.GetAll();
+            
+            var materialDto = materials.Select(p => new MaterialReadDto
+            {
+                Id = p.Id,
+                Instructor = p.InstructorName,
+                Name = p.Name,
+                DriveLink = p.Drive,
+                YoutubeLink = p.Youtube,
+                MaterialCode = p.CourseCode
+            }).ToList();
+
+            if (string.IsNullOrWhiteSpace(Keyword)) return new List<MaterialReadDto>();
+
+            Keyword = Keyword.Trim().ToLower();
+
+            // Step 2: Fuzzy filter in memory
+            var results = materialDto
+                .Select(m => new
+                {
+                    Material = m,
+                    Score = Fuzz.TokenSetRatio(Keyword, $"{m.Name}")
+                })
+                .Where(x => x.Score > 30) // You can adjust this threshold
+                .OrderByDescending(x => x.Score)
+                .Select(x => x.Material)
+                .ToList();
+
+            return results;
         }
     }
 }

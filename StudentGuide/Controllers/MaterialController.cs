@@ -157,8 +157,8 @@ namespace StudentGuide.API.Controllers
             }
         }
         [HttpGet]
-        [Route("Search/{keyword}")]
-        public async Task<IActionResult> Search(String keyword)
+        [Route("Search")]
+        public async Task<IActionResult> Search([FromQuery]String keyword)
         {
                 try
                 {
@@ -172,4 +172,5 @@ namespace StudentGuide.API.Controllers
         }
     }
     }
+
 

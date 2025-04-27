@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace StudentGuide.DAL.Data.Models
 {
     public class Stduent : Base
@@ -23,7 +22,7 @@ namespace StudentGuide.DAL.Data.Models
         public DateTime BirthDate { get; set; }
         [MaxLength(11)]
         public String PhoneNumber { get; set; } = string.Empty;
-        public int Semester { get; set; }
+        public String Semester { get; set; } = "Semester1";
         public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
         public Department Department { get; set; }

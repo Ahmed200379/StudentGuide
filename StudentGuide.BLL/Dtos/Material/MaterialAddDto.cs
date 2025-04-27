@@ -10,8 +10,8 @@ namespace StudentGuide.BLL.Dtos.Material
     {
         public String Name { get; set; } = string.Empty;
         public String Instructor { get; set; } = string.Empty;
-        public String? Drive { get; set; } = string.Empty;
-        public String? Youtube { get; set; } = string.Empty;
-        public String? Code { get; set; }
+        public String? YoutubeLink { get; set; }
+        public String? DriveLink { get; set; }
+        public String? CourseCode { get; set; }
     }
 }

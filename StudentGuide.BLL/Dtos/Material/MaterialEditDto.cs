@@ -8,11 +8,11 @@ namespace StudentGuide.BLL.Dtos.Material
 {
    public class MaterialEditDto
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
         public String Name { get; set; } = string.Empty;
         public String Instructor { get; set; } = string.Empty;
-        public String? Drive { get; set; }
-        public String? Youtube { get; set; }
-        public String? Code { get; set; }
+        public String? YoutubeLink { get; set; }
+        public String? DriveLink { get; set; }
+        public String? CourseCode { get; set; }
     }
 }

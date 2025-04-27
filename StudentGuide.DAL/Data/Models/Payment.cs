@@ -26,7 +26,7 @@ namespace StudentGuide.DAL.Data.Models
         [EnumDataType(typeof(PaymentMethod))]
         [Column(TypeName = "nvarchar(20)")]
         public PaymentMethod PaymentMethod { get; set; }
-        public Boolean IsPayable { get; set; } = false;
+        public bool IsPayable { get; set; } = false;
         public Stduent stduent { get; set; }
         [ForeignKey("Stduent")]
         public int StduentId { get; set; }

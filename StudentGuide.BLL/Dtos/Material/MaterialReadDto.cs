@@ -13,7 +13,7 @@ namespace StudentGuide.BLL.Dtos.Material
         public String Instructor { get; set; } = string.Empty;  
         public String? YoutubeLink { get; set; }
         public String? DriveLink { get; set; }
-        public String? MaterialCode { get; set; }
+        public String? CourseCode { get; set; }
 
     }
 }

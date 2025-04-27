@@ -12,8 +12,8 @@ using StudentGuide.DAL.Data.Context;
 namespace StudentGuide.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250419142212_init3")]
-    partial class init3
+    [Migration("20250426163202_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace StudentGuide.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CourseDepartment", b =>
-                {
-                    b.Property<string>("CoursesCode")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("DepartmentsCode")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("CoursesCode", "DepartmentsCode");
-
-                    b.HasIndex("DepartmentsCode");
-
-                    b.ToTable("CourseDepartment");
-                });
 
             modelBuilder.Entity("CourseStduent", b =>
                 {
@@ -60,11 +45,6 @@ namespace StudentGuide.DAL.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Group")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<int>("Hours")
                         .HasColumnType("int");
 
@@ -76,8 +56,7 @@ namespace StudentGuide.DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.PrimitiveCollection<string>("Prerequisite_Course")
-                        .IsRequired()
+                    b.PrimitiveCollection<string>("PrerequisiteCourses")
                         .HasColumnType("nvarchar(max)");
 
                     b.PrimitiveCollection<string>("Semesters")
@@ -87,6 +66,21 @@ namespace StudentGuide.DAL.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.CourseDepartment", b =>
+                {
+                    b.Property<string>("CoursesCode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DepartmentsCode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CoursesCode", "DepartmentsCode");
+
+                    b.HasIndex("DepartmentsCode");
+
+                    b.ToTable("CourseDepartment");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Department", b =>
@@ -132,6 +126,9 @@ namespace StudentGuide.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseCode");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Material_Name");
 
                     b.ToTable("Materials");
                 });
@@ -217,29 +214,15 @@ namespace StudentGuide.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Semester")
-                        .HasColumnType("int");
+                    b.Property<string>("Semester")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentCode");
 
                     b.ToTable("Stduents");
-                });
-
-            modelBuilder.Entity("CourseDepartment", b =>
-                {
-                    b.HasOne("StudentGuide.DAL.Data.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudentGuide.DAL.Data.Models.Department", null)
-                        .WithMany()
-                        .HasForeignKey("DepartmentsCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CourseStduent", b =>
@@ -255,6 +238,25 @@ namespace StudentGuide.DAL.Migrations
                         .HasForeignKey("StduentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.CourseDepartment", b =>
+                {
+                    b.HasOne("StudentGuide.DAL.Data.Models.Course", "Course")
+                        .WithMany("CourseDepartments")
+                        .HasForeignKey("CoursesCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentGuide.DAL.Data.Models.Department", "Department")
+                        .WithMany("CourseDepartments")
+                        .HasForeignKey("DepartmentsCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Material", b =>
@@ -290,11 +292,15 @@ namespace StudentGuide.DAL.Migrations
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Course", b =>
                 {
+                    b.Navigation("CourseDepartments");
+
                     b.Navigation("Materials");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Department", b =>
                 {
+                    b.Navigation("CourseDepartments");
+
                     b.Navigation("Stduents");
                 });
 

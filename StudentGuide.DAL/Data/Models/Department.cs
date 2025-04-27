@@ -13,7 +13,7 @@ namespace StudentGuide.DAL.Data.Models
         public String Code { get; set; } = string.Empty;
         public String Name { get; set; }= string.Empty;
         public virtual ICollection<Stduent> Stduents { get; set; } = new List<Stduent>();
-        public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
+        public virtual ICollection<CourseDepartment> CourseDepartments { get; set; } = new List<CourseDepartment>();
 
     }
 }

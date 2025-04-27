@@ -29,7 +29,7 @@ namespace StudentGuide.BLL.Services.Materials
                     Instructor=p.InstructorName,
                     DriveLink = p.Drive,
                     YoutubeLink = p.Youtube,
-                    MaterialCode=p.CourseCode
+                    CourseCode=p.CourseCode
                 });
             return AllMaterial;
         }
@@ -45,7 +45,7 @@ namespace StudentGuide.BLL.Services.Materials
                 Instructor = MaterialFromDb.InstructorName,
                 DriveLink = MaterialFromDb.Drive,
                 YoutubeLink = MaterialFromDb.Youtube,
-                MaterialCode=MaterialFromDb.CourseCode
+                CourseCode=MaterialFromDb.CourseCode
             };
             return material;
         }
@@ -60,7 +60,7 @@ namespace StudentGuide.BLL.Services.Materials
                 Instructor = MaterialFromDb.InstructorName,
                 Name = MaterialFromDb.Name,
                 YoutubeLink = MaterialFromDb.Youtube,
-                MaterialCode = MaterialFromDb.CourseCode
+                CourseCode = MaterialFromDb.CourseCode
             };
             return material;
         }
@@ -70,14 +70,13 @@ namespace StudentGuide.BLL.Services.Materials
         {
             try
             {
-      
                 Material material = new()
                 {
                     Name = NewMaterial.Name,
-                    Drive = NewMaterial.Drive,
-                    Youtube = NewMaterial.Youtube,
+                    Drive = NewMaterial.DriveLink,
+                    Youtube = NewMaterial.YoutubeLink,
                     InstructorName = NewMaterial.Instructor,
-                    CourseCode = NewMaterial.Code
+                    CourseCode = NewMaterial.CourseCode
                 };
                 await _unitOfWork.MaterialRepo.AddAsync(material);
                 int issaved = await _unitOfWork.Complete();
@@ -117,9 +116,9 @@ namespace StudentGuide.BLL.Services.Materials
             {
                 material.Name = materialEditDto.Name;
                 material.InstructorName = materialEditDto.Instructor;
-                material.Youtube = materialEditDto.Youtube;
-                material.Drive = materialEditDto.Drive;
-                material.CourseCode = materialEditDto.Code;
+                material.Youtube = materialEditDto.YoutubeLink;
+                material.Drive = materialEditDto.DriveLink;
+                material.CourseCode = materialEditDto.CourseCode;
 
                await _unitOfWork.MaterialRepo.Update(material);
                 int isupdated = await _unitOfWork.Complete();
@@ -137,7 +136,7 @@ namespace StudentGuide.BLL.Services.Materials
                 Name=p.Name,
                 DriveLink=p.Drive,
                 YoutubeLink=p.Youtube,
-                MaterialCode=p.CourseCode
+                CourseCode =p.CourseCode
             }).ToList();
             int totalCount = await _unitOfWork.MaterialRepo.TotalCount();
             return new MaterialReadPagnationDto
@@ -158,10 +157,9 @@ namespace StudentGuide.BLL.Services.Materials
                 Name = p.Name,
                 DriveLink = p.Drive,
                 YoutubeLink = p.Youtube,
-                MaterialCode = p.CourseCode
+                CourseCode = p.CourseCode
             }).ToList();
-
-            if (string.IsNullOrWhiteSpace(Keyword)) return new List<MaterialReadDto>();
+            if (string.IsNullOrWhiteSpace(Keyword)) return materialDto;
 
             Keyword = Keyword.Trim().ToLower();
 

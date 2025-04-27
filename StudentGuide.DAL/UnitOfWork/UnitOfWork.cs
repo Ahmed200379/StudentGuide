@@ -1,42 +1,36 @@
 ﻿using StudentGuide.DAL.Data.Context;
-using StudentGuide.DAL.Data.Models;
-using StudentGuide.DAL.Repos;
-using StudentGuide.DAL.Repos.BaseRepo;
+using StudentGuide.DAL.Repos.CourseRepo;
 using StudentGuide.DAL.Repos.DepartmentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentGuide.DAL.UnitOfWork
 {
-   public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
 
+        private readonly IMaterialRepo _materialRepo;
+        private readonly IDepartmentRepo _departmentRepo;
+        private readonly ICourseRepo _courseRepo;
 
-        Repos.MaterialRepo.IMaterialRepo _MaterialRepo { get; }
-        IDepartmentRepo _departmentRepo { get; }
-
-        Repos.MaterialRepo.IMaterialRepo IUnitOfWork.MaterialRepo => _MaterialRepo;
-
+        public IMaterialRepo MaterialRepo => _materialRepo;
         public IDepartmentRepo DepartmentRepo => _departmentRepo;
+        public ICourseRepo CourseRepo => _courseRepo;
 
-        public UnitOfWork(ApplicationDbContext context, Repos.MaterialRepo.IMaterialRepo materialRepo, IDepartmentRepo departmentRepo)
+        public UnitOfWork(ApplicationDbContext context, IMaterialRepo materialRepo, IDepartmentRepo departmentRepo, ICourseRepo courseRepo)
         {
             _context = context;
-            _MaterialRepo = materialRepo;
-            _departmentRepo= departmentRepo;
+            _materialRepo = materialRepo;
+            _departmentRepo = departmentRepo;
+            _courseRepo = courseRepo;
         }
 
-        async Task<int> IUnitOfWork.Complete()
+        public async Task<int> Complete()
         {
             return await _context.SaveChangesAsync();
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             _context.Dispose();
         }

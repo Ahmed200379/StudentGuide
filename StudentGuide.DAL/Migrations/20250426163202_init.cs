@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentGuide.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class init3 : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,11 +16,10 @@ namespace StudentGuide.DAL.Migrations
                 columns: table => new
                 {
                     Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Prerequisite_Course = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Group = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Hours = table.Column<int>(type: "int", nullable: false),
                     IsCompulsory = table.Column<bool>(type: "bit", nullable: false),
                     Semesters = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PrerequisiteCourses = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -99,7 +98,7 @@ namespace StudentGuide.DAL.Migrations
                     Photo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Semester = table.Column<int>(type: "int", nullable: false),
+                    Semester = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
@@ -171,6 +170,11 @@ namespace StudentGuide.DAL.Migrations
                 name: "IX_CourseStduent_StduentsId",
                 table: "CourseStduent",
                 column: "StduentsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Material_Name",
+                table: "Materials",
+                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Materials_CourseCode",

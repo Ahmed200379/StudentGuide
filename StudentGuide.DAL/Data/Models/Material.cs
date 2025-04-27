@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace StudentGuide.DAL.Data.Models
 {

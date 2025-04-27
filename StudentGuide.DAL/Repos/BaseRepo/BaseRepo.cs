@@ -3,7 +3,9 @@ using StudentGuide.DAL.Data.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+
 using System.Threading.Tasks;
 
 namespace StudentGuide.DAL.Repos.BaseRepo
@@ -21,14 +23,24 @@ namespace StudentGuide.DAL.Repos.BaseRepo
             await _context.Set<T>().AddAsync(entity);
         }
 
-        public  async Task Delete(T entity)
+        public async Task Delete(T entity)
         {
-            _context.Set<T>().Remove(entity);
+              _context.Set<T>().Remove(entity);
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
             return await _context.Set<T>().AsNoTracking().ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? expression =null)
+        {
+            IQueryable<T> allData = _context.Set<T>();
+            if(expression != null)
+            {
+                allData = allData.Where(expression);
+            }
+            return await allData.AsNoTracking().ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(int id)
@@ -46,5 +58,10 @@ namespace StudentGuide.DAL.Repos.BaseRepo
             _context.Set<T>().Update(entity);
             return Task.CompletedTask;
         }
+        public async Task<int> TotalCount()
+        {
+            return await _context.Set<T>().CountAsync();
+        }
+
     }
 }

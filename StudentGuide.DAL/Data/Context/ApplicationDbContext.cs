@@ -16,13 +16,12 @@ namespace StudentGuide.DAL.Data.Context
         public DbSet<Material> Materials { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Stduent> Stduents { get; set; }
-        //material
-        //deparament
         //Course
         //payment
         //student
         //jwt
-
+        //crud 
+        //tree work
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,24 +30,44 @@ namespace StudentGuide.DAL.Data.Context
             {
                 entity.HasKey(c => c.Code);
 
-                entity.HasMany(c => c.Departments)
-                .WithMany(d => d.Courses);
+                entity.HasMany(c => c.CourseDepartments)
+                      .WithOne(cd => cd.Course)
+                      .HasForeignKey(cd => cd.CoursesCode);
 
                 entity.HasMany(c => c.Stduents)
-                .WithMany(m => m.Courses);
-
+                      .WithMany(s => s.Courses);
             });
             #endregion
+
+            #region CourseDepartment
+            modelBuilder.Entity<CourseDepartment>()
+                .HasKey(cd => new { cd.CoursesCode, cd.DepartmentsCode });
+
+            modelBuilder.Entity<CourseDepartment>()
+                .HasOne(cd => cd.Course)
+                .WithMany(c => c.CourseDepartments)
+                .HasForeignKey(cd => cd.CoursesCode);
+
+            modelBuilder.Entity<CourseDepartment>()
+                .HasOne(cd => cd.Department)
+                .WithMany(d => d.CourseDepartments)
+                .HasForeignKey(cd => cd.DepartmentsCode);
+            #endregion
+
             #region Department
             modelBuilder.Entity<Department>(entity =>
             {
-                entity.HasKey(c => c.Code);
+                entity.HasKey(d => d.Code);
 
-                entity.HasMany(d => d.Courses)
-                .WithMany(s => s.Departments);
-            }
-            );
+                entity.HasMany(d => d.CourseDepartments)
+                      .WithOne(cd => cd.Department)
+                      .HasForeignKey(cd => cd.DepartmentsCode);
+            });
             #endregion
+
+            modelBuilder.Entity<Material>()
+                .HasIndex(m => m.Name)
+                .HasDatabaseName("IX_Material_Name");
             base.OnModelCreating(modelBuilder);
         }
     }

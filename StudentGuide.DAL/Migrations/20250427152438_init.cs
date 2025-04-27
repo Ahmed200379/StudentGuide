@@ -94,6 +94,7 @@ namespace StudentGuide.DAL.Migrations
                     Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gpa = table.Column<double>(type: "float", maxLength: 5, nullable: false),
+                    Hours = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Photo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -110,30 +111,6 @@ namespace StudentGuide.DAL.Migrations
                         column: x => x.DepartmentCode,
                         principalTable: "Departments",
                         principalColumn: "Code",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CourseStduent",
-                columns: table => new
-                {
-                    CoursesCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StduentsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseStduent", x => new { x.CoursesCode, x.StduentsId });
-                    table.ForeignKey(
-                        name: "FK_CourseStduent_Courses_CoursesCode",
-                        column: x => x.CoursesCode,
-                        principalTable: "Courses",
-                        principalColumn: "Code",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CourseStduent_Stduents_StduentsId",
-                        column: x => x.StduentsId,
-                        principalTable: "Stduents",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -161,15 +138,36 @@ namespace StudentGuide.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentCourse",
+                columns: table => new
+                {
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsPassed = table.Column<bool>(type: "bit", nullable: false),
+                    Grade = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentCourse", x => new { x.StudentId, x.CourseCode });
+                    table.ForeignKey(
+                        name: "FK_StudentCourse_Courses_CourseCode",
+                        column: x => x.CourseCode,
+                        principalTable: "Courses",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentCourse_Stduents_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Stduents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CourseDepartment_DepartmentsCode",
                 table: "CourseDepartment",
                 column: "DepartmentsCode");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CourseStduent_StduentsId",
-                table: "CourseStduent",
-                column: "StduentsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Material_Name",
@@ -190,6 +188,11 @@ namespace StudentGuide.DAL.Migrations
                 name: "IX_Stduents_DepartmentCode",
                 table: "Stduents",
                 column: "DepartmentCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentCourse_CourseCode",
+                table: "StudentCourse",
+                column: "CourseCode");
         }
 
         /// <inheritdoc />
@@ -199,13 +202,13 @@ namespace StudentGuide.DAL.Migrations
                 name: "CourseDepartment");
 
             migrationBuilder.DropTable(
-                name: "CourseStduent");
-
-            migrationBuilder.DropTable(
                 name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "StudentCourse");
 
             migrationBuilder.DropTable(
                 name: "Courses");

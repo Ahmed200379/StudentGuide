@@ -3,6 +3,7 @@ using StudentGuide.BLL.Services.Materials;
 using StudentGuide.BLL.Services.Departments;
 using StudentGuide.DAL.Repos.DepartmentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
+using StudentGuide.DAL.Repos.StudentRepo;
 using StudentGuide.DAL.UnitOfWork;
 using System.Collections;
 using StudentGuide.DAL.Repos.CourseRepo;
@@ -22,6 +23,7 @@ namespace StudentGuide.API
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICourseRepo, CourseRepo>();
             services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IStudentRepo,StudentRepo>();
             services.AddScoped<HashIdService>();
 
         }

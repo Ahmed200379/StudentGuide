@@ -22,21 +22,6 @@ namespace StudentGuide.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CourseStduent", b =>
-                {
-                    b.Property<string>("CoursesCode")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("StduentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CoursesCode", "StduentsId");
-
-                    b.HasIndex("StduentsId");
-
-                    b.ToTable("CourseStduent");
-                });
-
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Course", b =>
                 {
                     b.Property<string>("Code")
@@ -166,7 +151,7 @@ namespace StudentGuide.DAL.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Stduent", b =>
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,6 +177,9 @@ namespace StudentGuide.DAL.Migrations
                     b.Property<double>("Gpa")
                         .HasMaxLength(5)
                         .HasColumnType("float");
+
+                    b.Property<int>("Hours")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -222,19 +210,25 @@ namespace StudentGuide.DAL.Migrations
                     b.ToTable("Stduents");
                 });
 
-            modelBuilder.Entity("CourseStduent", b =>
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.StudentCourse", b =>
                 {
-                    b.HasOne("StudentGuide.DAL.Data.Models.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
 
-                    b.HasOne("StudentGuide.DAL.Data.Models.Stduent", null)
-                        .WithMany()
-                        .HasForeignKey("StduentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("CourseCode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPassed")
+                        .HasColumnType("bit");
+
+                    b.HasKey("StudentId", "CourseCode");
+
+                    b.HasIndex("CourseCode");
+
+                    b.ToTable("StudentCourse");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.CourseDepartment", b =>
@@ -267,7 +261,7 @@ namespace StudentGuide.DAL.Migrations
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Payment", b =>
                 {
-                    b.HasOne("StudentGuide.DAL.Data.Models.Stduent", "stduent")
+                    b.HasOne("StudentGuide.DAL.Data.Models.Student", "stduent")
                         .WithMany("Payments")
                         .HasForeignKey("StduentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,7 +270,7 @@ namespace StudentGuide.DAL.Migrations
                     b.Navigation("stduent");
                 });
 
-            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Stduent", b =>
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Student", b =>
                 {
                     b.HasOne("StudentGuide.DAL.Data.Models.Department", "Department")
                         .WithMany("Stduents")
@@ -287,11 +281,32 @@ namespace StudentGuide.DAL.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.StudentCourse", b =>
+                {
+                    b.HasOne("StudentGuide.DAL.Data.Models.Course", "Course")
+                        .WithMany("Students")
+                        .HasForeignKey("CourseCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentGuide.DAL.Data.Models.Student", "Student")
+                        .WithMany("Courses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Course", b =>
                 {
                     b.Navigation("CourseDepartments");
 
                     b.Navigation("Materials");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Department", b =>
@@ -301,8 +316,10 @@ namespace StudentGuide.DAL.Migrations
                     b.Navigation("Stduents");
                 });
 
-            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Stduent", b =>
+            modelBuilder.Entity("StudentGuide.DAL.Data.Models.Student", b =>
                 {
+                    b.Navigation("Courses");
+
                     b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618

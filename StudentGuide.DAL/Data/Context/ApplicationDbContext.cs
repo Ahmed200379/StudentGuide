@@ -15,7 +15,7 @@ namespace StudentGuide.DAL.Data.Context
         public DbSet<Department> Departments { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<Payment> Payments { get; set; }
-        public DbSet<Stduent> Stduents { get; set; }
+        public DbSet<Student> Stduents { get; set; }
         //Course
         //payment
         //student
@@ -25,8 +25,11 @@ namespace StudentGuide.DAL.Data.Context
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<StudentCourse>()
+                .HasKey(sc => new {sc.StudentId,sc.CourseCode});
             #region Course
             modelBuilder.Entity<Course>(entity =>
+
             {
                 entity.HasKey(c => c.Code);
 
@@ -34,8 +37,6 @@ namespace StudentGuide.DAL.Data.Context
                       .WithOne(cd => cd.Course)
                       .HasForeignKey(cd => cd.CoursesCode);
 
-                entity.HasMany(c => c.Stduents)
-                      .WithMany(s => s.Courses);
             });
             #endregion
 

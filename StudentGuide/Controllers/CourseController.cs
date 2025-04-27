@@ -126,5 +126,23 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [HttpGet]
+        [Route("GetAllAvalibleCourses")]
+        public async Task<IActionResult> GetAllAvailableCourses(int id)
+        {
+            try
+            {
+               if(!ModelState.IsValid )
+                {
+                    return BadRequest(ModelState);
+                }
+               var availableCourses= await _courseService.GetAllCoursesForStudent(id);
+                return Ok(availableCourses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
     }
 }

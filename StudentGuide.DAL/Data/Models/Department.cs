@@ -12,7 +12,7 @@ namespace StudentGuide.DAL.Data.Models
         [Key]
         public String Code { get; set; } = string.Empty;
         public String Name { get; set; }= string.Empty;
-        public virtual ICollection<Stduent> Stduents { get; set; } = new List<Stduent>();
+        public virtual ICollection<Student> Stduents { get; set; } = new List<Student>();
         public virtual ICollection<CourseDepartment> CourseDepartments { get; set; } = new List<CourseDepartment>();
 
     }

@@ -27,7 +27,7 @@ namespace StudentGuide.DAL.Data.Models
         [Column(TypeName = "nvarchar(20)")]
         public PaymentMethod PaymentMethod { get; set; }
         public bool IsPayable { get; set; } = false;
-        public Stduent stduent { get; set; }
+        public Student stduent { get; set; }
         [ForeignKey("Stduent")]
         public int StduentId { get; set; }
     }

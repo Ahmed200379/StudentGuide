@@ -19,7 +19,7 @@ namespace StudentGuide.DAL.Data.Models
 
         public List<String> Semesters { get; set; }= new List<string>() {"Semester1"};
         public List<String>? PrerequisiteCourses { get; set; }
-        public virtual ICollection<Stduent> Stduents { get; set; } = new List<Stduent>();
+        public virtual ICollection<StudentCourse> Students { get; set; } = new List<StudentCourse>();
         public virtual ICollection<Material> Materials { get; set; } = new List<Material>();
         public virtual ICollection<CourseDepartment> CourseDepartments { get; set; } = new List<CourseDepartment>();
     }

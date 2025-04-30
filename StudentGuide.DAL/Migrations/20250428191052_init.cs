@@ -89,8 +89,7 @@ namespace StudentGuide.DAL.Migrations
                 name: "Stduents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gpa = table.Column<double>(type: "float", maxLength: 5, nullable: false),
@@ -105,7 +104,7 @@ namespace StudentGuide.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stduents", x => x.Id);
+                    table.PrimaryKey("PK_Stduents", x => x.Code);
                     table.ForeignKey(
                         name: "FK_Stduents_Departments_DepartmentCode",
                         column: x => x.DepartmentCode,
@@ -125,16 +124,17 @@ namespace StudentGuide.DAL.Migrations
                     Payment_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     IsPayable = table.Column<bool>(type: "bit", nullable: false),
+                    stduentCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StduentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_Stduents_StduentId",
-                        column: x => x.StduentId,
+                        name: "FK_Payments_Stduents_stduentCode",
+                        column: x => x.stduentCode,
                         principalTable: "Stduents",
-                        principalColumn: "Id",
+                        principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -142,7 +142,7 @@ namespace StudentGuide.DAL.Migrations
                 name: "StudentCourse",
                 columns: table => new
                 {
-                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsPassed = table.Column<bool>(type: "bit", nullable: false),
                     Grade = table.Column<int>(type: "int", nullable: false)
@@ -160,7 +160,7 @@ namespace StudentGuide.DAL.Migrations
                         name: "FK_StudentCourse_Stduents_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Stduents",
-                        principalColumn: "Id",
+                        principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -180,9 +180,9 @@ namespace StudentGuide.DAL.Migrations
                 column: "CourseCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_StduentId",
+                name: "IX_Payments_stduentCode",
                 table: "Payments",
-                column: "StduentId");
+                column: "stduentCode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stduents_DepartmentCode",

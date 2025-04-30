@@ -145,11 +145,29 @@ namespace StudentGuide.BLL.Services.Materials
                 TotalCount = totalCount
             }; 
         }
+        public async Task<MaterialReadWithCountDto> GetAllMaterialWithCount()
+        {
+            var materials = await _unitOfWork.MaterialRepo.GetAllAsync();
+            var materialDto = materials.Select(p => new MaterialReadDto
+            {
+                Id = p.Id,
+                Instructor = p.InstructorName,
+                Name = p.Name,
+                DriveLink = p.Drive,
+                YoutubeLink = p.Youtube,
+                CourseCode = p.CourseCode
+            }).ToList();
+            int totalCount = await _unitOfWork.MaterialRepo.TotalCount();
+            return new MaterialReadWithCountDto
+            {
+                Materials = materialDto,
+                TotalCount = totalCount
+            };
+        }
 
-        public async Task<List<MaterialReadDto>> Search(string Keyword)
+        public async Task<List<MaterialReadDto>> Search(string? Keyword)
         {
             var materials = await _unitOfWork.MaterialRepo.GetAll();
-            
             var materialDto = materials.Select(p => new MaterialReadDto
             {
                 Id = p.Id,
@@ -177,5 +195,6 @@ namespace StudentGuide.BLL.Services.Materials
 
             return results;
         }
+
     }
 }

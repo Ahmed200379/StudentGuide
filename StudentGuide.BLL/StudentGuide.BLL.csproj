@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Dtos\Material\MaterialReadWithCountDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hashids.net" Version="1.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StudentGuide.DAL\StudentGuide.DAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Students\" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,8 @@ using System.Collections;
 using StudentGuide.DAL.Repos.CourseRepo;
 using Microsoft.Extensions.DependencyInjection;
 using StudentGuide.BLL.Services.Courses;
+using StudentGuide.BLL.Services.Students;
+using StudentGuide.API.Helpers;
 
 namespace StudentGuide.API
 {
@@ -24,6 +26,8 @@ namespace StudentGuide.API
             services.AddScoped<ICourseRepo, CourseRepo>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IStudentRepo,StudentRepo>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IHelper, Helper>();
             services.AddScoped<HashIdService>();
 
         }

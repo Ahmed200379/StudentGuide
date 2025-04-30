@@ -16,12 +16,8 @@ namespace StudentGuide.DAL.Data.Context
         public DbSet<Material> Materials { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Student> Stduents { get; set; }
-        //Course
         //payment
-        //student
         //jwt
-        //crud 
-        //tree work
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

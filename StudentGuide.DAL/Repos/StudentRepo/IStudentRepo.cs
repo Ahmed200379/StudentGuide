@@ -10,5 +10,8 @@ namespace StudentGuide.DAL.Repos.StudentRepo
 {
    public interface IStudentRepo:IBaseRepo<Student>
     {
+        public Task<IEnumerable<Student>> GetAllStudentsInPagnation(int count, int countPerPage);
+        public Task AddRangeAsync(List<StudentCourse> studentCourses);
+
     }
 }

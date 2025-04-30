@@ -20,15 +20,15 @@ namespace StudentGuide.DAL.Repos.MaterialRepo
 
         public async Task<IEnumerable<Material>> GetAllMaterialsInPagnation(int page, int countPerPage)
         {
-            if (page < 1) page = 1;
-            if (countPerPage < 1) countPerPage = 10;
+                if (page < 1) page = 1;
+                if (countPerPage < 1) countPerPage = 10;
 
-            var materials = await _context.Materials
-            .OrderBy(m=>m.Name)
-            .Skip((page - 1) * countPerPage)
-            .Take(countPerPage).ToListAsync();
-
-            return materials;
+                var materials = await _context.Materials
+                .OrderBy(m => m.Name)
+                .Skip((page - 1) * countPerPage)
+                .Take(countPerPage).ToListAsync();
+                return materials;
+           
         }
 
         public async Task<Material> GetMaterialByNameAsync(string Name)

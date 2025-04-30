@@ -1,23 +1,23 @@
 ﻿using FuzzySharp;
-using Microsoft.VisualBasic;
 using StudentGuide.BLL.Dtos.Course;
-using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StudentGuide.BLL.Constant;
+using StudentGuide.BLL.Services.Students;
+using Microsoft.EntityFrameworkCore.Design;
+using StudentGuide.API.Helpers;
 namespace StudentGuide.BLL.Services.Courses
 {
     public class CourseService : ICourseService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CourseService(IUnitOfWork unitOfWork)
+        private readonly IStudentService _studentService;
+        private readonly IHelper _helper;
+        public CourseService(IUnitOfWork unitOfWork, IStudentService studentService,IHelper helper)
         {
             _unitOfWork = unitOfWork;
+            _studentService= studentService;
+            _helper = helper;
         }
         public async Task AddCourse(CourseAddDto newCourse)
         {
@@ -182,84 +182,92 @@ namespace StudentGuide.BLL.Services.Courses
         }
 
 
-        public async Task<IEnumerable<CourseReadDto>> GetAllCoursesForStudent(int id)
+        public async Task<CourseReadForStudentDto> GetAllCoursesForStudent(String code)
         {
-            // Get student with this id
-            var student = await _unitOfWork.StudentRepo.GetByIdAsync(id);
+            var student = await _unitOfWork.StudentRepo.GetByIdAsync(code);
             if (student == null)
             {
                 throw new Exception("No Student Found");
             }
 
-            var checkSemster = ConstantData.SemestersByName[student.Semester];
+            var maxHours = await _studentService.GetMaxHours(code);
+            var checkSemester = ConstantData.SemestersByName[student.Semester];
 
-            IEnumerable<Course>? courses = new List<Course>();
+            IEnumerable<Course> courses = new List<Course>();
 
             // Get courses based on the student's semester (even or odd)
-            if (checkSemster % 2 == 0 && checkSemster != 0)
-            {
-                courses = await _unitOfWork.CourseRepo.GetAllAsync(c =>
-                    c.Semesters.Any(s => ConstantData.SemestersByName[s] % 2 == 0));
-            }
-            else if (checkSemster % 2 != 0)
-            {
-                courses = await _unitOfWork.CourseRepo.GetAllAsync(c =>
-                    c.Semesters.Any(s => ConstantData.SemestersByName[s] % 2 != 0));
-            }
-            else
-            {
-                courses = await _unitOfWork.CourseRepo.GetAllAsync(c =>
-                    c.Semesters.Contains(student.Semester));
-            }
+            var allCourses = await _unitOfWork.CourseRepo.GetAllAsync();
 
-            // Get all courses of the specific semester the student belongs to
-            var coursesDto = courses.Select(p => new CourseReadDto
+            if (checkSemester % 2 == 0 && checkSemester != 0)
             {
-                Code = p.Code,
-                NameOfCourse = p.Name,
-                HoursOfCourse = p.Hours,
-                MandatoryCourse = p.IsCompulsory,
-                PreRequestCoursesCode = p.PrerequisiteCourses!.ToList(),
-                Semesters = p.Semesters.ToList(),
-                DepartmentIds = p.CourseDepartments.Select(p => p.DepartmentsCode).ToList(),
-            }).ToList();
-
-            if (checkSemster == 1)
+                courses = allCourses.Where(c =>
+                    c.Semesters.Any(s => ConstantData.SemestersByName.ContainsKey(s) && ConstantData.SemestersByName[s] % 2 == 0));
+            }
+            else if (checkSemester % 2 != 0)
             {
-                // Filter out courses that do not have prerequisite courses for checkSemster == 1
-                //  coursesDto = coursesDto.Where(s=>s.Semesters=="Semester1")
-                coursesDto = coursesDto.Where(s => s.Semesters.Contains(student.Semester)).ToList();
-                return coursesDto;
+                courses = allCourses.Where(c =>
+                    c.Semesters.Any(s => ConstantData.SemestersByName.ContainsKey(s) && ConstantData.SemestersByName[s] % 2 != 0));
             }
             else
             {
-                // 1. Get all courses that the student has passed
-                var passedCoursesCode = courses.Where(p => p.Students.Any(s => s.StudentId == id && s.IsPassed))
-                    .Select(c => c.Code)
+                courses = allCourses.Where(c => c.Semesters.Contains(student.Semester));
+            }
+
+
+            // Handling semester 1 (Special Case)
+            if (checkSemester == 1)
+            {
+                var availableCourses = courses
+                    .Where(c => c.Semesters.Contains(student.Semester))
+                    .Select(c=>_helper.MapToCourseReadDto(c))
                     .ToList();
 
-                // 2. Filter out courses the student has already passed
-                // 3. Exclude courses that have prerequisites the student hasn't passed
-                var availableCourses = courses.Where(c => !c.Students.Any(s => s.StudentId == id && s.IsPassed)
-                    && (c.PrerequisiteCourses.Count() == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p))))
-                    .ToList();
-
-                // Convert available courses to CourseReadDto
-                var availableCoursesDto = availableCourses.Select(p => new CourseReadDto
+                return new CourseReadForStudentDto
                 {
-                    Code = p.Code,
-                    NameOfCourse = p.Name,
-                    HoursOfCourse = p.Hours,
-                    MandatoryCourse = p.IsCompulsory,
-                    PreRequestCoursesCode = p.PrerequisiteCourses!.ToList(),
-                    Semesters = p.Semesters.ToList(),
-                    DepartmentIds = p.CourseDepartments.Select(p => p.DepartmentsCode).ToList(),
-                }).ToList();
-
-                return availableCoursesDto;
+                    AllAvaliableCourses = availableCourses,
+                    HoursOfStudent = student.Hours,
+                    MaxHours = maxHours
+                };
             }
+
+            // Handling other semesters
+            var passedCourses = courses
+                .Where(c => c.Students.Any(s => s.StudentId == code && s.IsPassed))
+                .ToList();
+
+            var passedCoursesCode = passedCourses.Select(c => c.Code).ToList();
+
+            var totalHoursForHumanCourses = passedCourses
+                .Where(c => c.CourseDepartments.Any(d => d.DepartmentsCode == "HM"))
+                .Sum(c => c.Hours);
+
+            var totalHoursForElectiveCourses = passedCourses
+                .Where(c => !c.IsCompulsory)
+                .Sum(c => c.Hours);
+
+            // Apply additional filters
+            if (totalHoursForElectiveCourses >= 63)
+            {
+                courses = courses.Where(c => c.IsCompulsory).ToList();
+            }
+
+            if (totalHoursForHumanCourses >= 12)
+            {
+                courses = courses.Where(c => !c.CourseDepartments.Any(d => d.DepartmentsCode == "HM")).ToList();
+            }
+
+            var availableCoursesFiltered = courses
+                .Where(c => !c.Students.Any(s => s.StudentId == code && s.IsPassed)
+                    && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p))))
+                .Select(c => _helper.MapToCourseReadDto(c))
+                .ToList();
+
+            return new CourseReadForStudentDto
+            {
+                AllAvaliableCourses = availableCoursesFiltered,
+                HoursOfStudent = student.Hours,
+                MaxHours = maxHours
+            };
         }
-
-
     }
 }

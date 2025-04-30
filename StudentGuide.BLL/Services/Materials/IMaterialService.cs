@@ -10,6 +10,7 @@ namespace StudentGuide.BLL.Services.Materials
    public interface IMaterialService
     {
         public Task<IEnumerable<MaterialReadDto>> GetAllMaterial();
+        public Task<MaterialReadWithCountDto> GetAllMaterialWithCount();
         public Task<bool> AddNewMaterial(MaterialAddDto newmaterial);
         public Task<bool> EditMaterial(MaterialEditDto material);
         public Task<MaterialReadDto?> GetMaterialById(int id);

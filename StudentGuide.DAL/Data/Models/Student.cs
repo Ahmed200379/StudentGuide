@@ -10,7 +10,7 @@ namespace StudentGuide.DAL.Data.Models
     public class Student : Base
     {
         [Key]
-        public int Id { get; set; }
+        public String Code { get; set; }
         [EmailAddress]
         [MaxLength(50), MinLength(10)]
         public String Email { get; set; } = string.Empty;

@@ -94,6 +94,25 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [HttpGet]
+        [Route("GetAllMaterialsWithCount")]
+        public async Task<IActionResult> GetAllMaterialsWithCount()
+        {
+            try
+            {
+                var materials = await _materialService.GetAllMaterialWithCount();
+                if (materials == null)
+                    return NotFound();
+                else
+                    return Ok(materials);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex);
+            }
+
+        }
         [HttpPost]
         [Route("Dashboard/AddNewMaterial")]
         public async Task<IActionResult> AddNewMaterial(MaterialAddDto NewMaterial)
@@ -158,7 +177,7 @@ namespace StudentGuide.API.Controllers
         }
         [HttpGet]
         [Route("Search")]
-        public async Task<IActionResult> Search([FromQuery]String keyword)
+        public async Task<IActionResult> Search([FromQuery]String? keyword)
         {
                 try
                 {

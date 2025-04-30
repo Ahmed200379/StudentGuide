@@ -128,7 +128,7 @@ namespace StudentGuide.API.Controllers
         }
         [HttpGet]
         [Route("GetAllAvalibleCourses")]
-        public async Task<IActionResult> GetAllAvailableCourses(int id)
+        public async Task<IActionResult> GetAllAvailableCourses(string code)
         {
             try
             {
@@ -136,7 +136,7 @@ namespace StudentGuide.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-               var availableCourses= await _courseService.GetAllCoursesForStudent(id);
+               var availableCourses= await _courseService.GetAllCoursesForStudent(code);
                 return Ok(availableCourses);
             }
             catch (Exception ex)

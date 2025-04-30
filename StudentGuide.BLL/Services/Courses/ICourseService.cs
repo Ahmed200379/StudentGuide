@@ -17,6 +17,6 @@ namespace StudentGuide.BLL.Services.Courses
         public Task DeleteCourse(int id);
         public Task<CourseReadPagnationDto> GetAllCoursesInPagnation(int page, int countPerPage);
         public Task<List<CourseReadDto>> Search(String Keyword);
-        public Task<IEnumerable<CourseReadDto>> GetAllCoursesForStudent(int id);
+        public Task<CourseReadForStudentDto> GetAllCoursesForStudent(string code);
     }
 }

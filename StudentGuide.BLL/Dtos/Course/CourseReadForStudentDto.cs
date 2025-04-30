@@ -8,9 +8,8 @@ namespace StudentGuide.BLL.Dtos.Course
 {
    public class CourseReadForStudentDto
     {
-        public String Code { get; set; }=string.Empty;
-        public String NameOfCourse { get; set; } = string.Empty;
-        public int Hourse {  get; set; }
-
+        public IEnumerable<CourseReadDto> AllAvaliableCourses { get; set; } = new List<CourseReadDto>();
+        public int HoursOfStudent { get; set; }
+        public int MaxHours { get; set; }
     }
 }

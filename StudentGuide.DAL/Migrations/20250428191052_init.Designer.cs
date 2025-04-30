@@ -12,7 +12,7 @@ using StudentGuide.DAL.Data.Context;
 namespace StudentGuide.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250427152438_init")]
+    [Migration("20250428191052_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -147,20 +147,21 @@ namespace StudentGuide.DAL.Migrations
                     b.Property<int>("StduentId")
                         .HasColumnType("int");
 
+                    b.Property<string>("stduentCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("StduentId");
+                    b.HasIndex("stduentCode");
 
                     b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.Student", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -206,7 +207,7 @@ namespace StudentGuide.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Code");
 
                     b.HasIndex("DepartmentCode");
 
@@ -215,8 +216,8 @@ namespace StudentGuide.DAL.Migrations
 
             modelBuilder.Entity("StudentGuide.DAL.Data.Models.StudentCourse", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CourseCode")
                         .HasColumnType("nvarchar(450)");
@@ -266,7 +267,7 @@ namespace StudentGuide.DAL.Migrations
                 {
                     b.HasOne("StudentGuide.DAL.Data.Models.Student", "stduent")
                         .WithMany("Payments")
-                        .HasForeignKey("StduentId")
+                        .HasForeignKey("stduentCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

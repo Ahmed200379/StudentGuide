@@ -1,4 +1,5 @@
-﻿using StudentGuide.BLL.Dtos.Material;
+﻿using StudentGuide.BLL.Dtos.Course;
+using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.UnitOfWork;
 using System;
@@ -18,6 +19,7 @@ namespace StudentGuide.BLL.Services.Students
         public Task<StudentReadForAdminDto> GetByIdForAdmin(string code);
         public Task<StudentReadForStudentDto> GetByIdForStudent(string code);
         public Task EnrollCourses(StudentErollDto studentErollDto);
+        public Task<List<StudentReadForAdminDto>> Search(String Keyword);
         public Task Delete(string code);
         public Task<StudentReadWithCountDto> GetAllStudentsInPagnation(int page, int countPerPage);
     }

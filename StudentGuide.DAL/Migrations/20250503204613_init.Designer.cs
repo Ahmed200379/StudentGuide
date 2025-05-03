@@ -12,7 +12,7 @@ using StudentGuide.DAL.Data.Context;
 namespace StudentGuide.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250428191052_init")]
+    [Migration("20250503204613_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -75,7 +75,8 @@ namespace StudentGuide.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Code");
 
@@ -227,6 +228,10 @@ namespace StudentGuide.DAL.Migrations
 
                     b.Property<bool>("IsPassed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Semester")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StudentId", "CourseCode");
 

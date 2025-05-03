@@ -192,7 +192,7 @@ namespace StudentGuide.BLL.Services.Materials
                 .OrderByDescending(x => x.Score)
                 .Select(x => x.Material)
                 .ToList();
-
+            if (!results.Any()) return materialDto;
             return results;
         }
 

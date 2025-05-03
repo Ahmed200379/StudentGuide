@@ -1,0 +1,15 @@
+﻿using StudentGuide.DAL.Data.Models;
+using StudentGuide.DAL.Repos.BaseRepo;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace StudentGuide.DAL.Repos.ResultRepo
+{
+   public interface IResultRepo:IBaseRepo<StudentCourse>
+    {
+        public void UpdateRangeAsync(List<StudentCourse> results);
+    }
+}

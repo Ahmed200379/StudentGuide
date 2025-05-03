@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudentGuide.DAL.Data.Context;
+using StudentGuide.DAL.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,10 @@ namespace StudentGuide.DAL.Repos.BaseRepo
         {
             return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
-
+        public async Task AddRangeAsync(List<T> entity)
+        {
+            await _context.Set<T>().AddRangeAsync(entity);
+        }
         public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? expression =null)
         {
             IQueryable<T> allData = _context.Set<T>();
@@ -62,6 +66,5 @@ namespace StudentGuide.DAL.Repos.BaseRepo
         {
             return await _context.Set<T>().CountAsync();
         }
-
     }
 }

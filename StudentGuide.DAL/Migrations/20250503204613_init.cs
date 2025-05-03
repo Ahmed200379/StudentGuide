@@ -32,7 +32,7 @@ namespace StudentGuide.DAL.Migrations
                 columns: table => new
                 {
                     Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,7 +145,8 @@ namespace StudentGuide.DAL.Migrations
                     StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsPassed = table.Column<bool>(type: "bit", nullable: false),
-                    Grade = table.Column<int>(type: "int", nullable: false)
+                    Grade = table.Column<int>(type: "int", nullable: false),
+                    Semester = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

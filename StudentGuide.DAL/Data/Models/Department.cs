@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.DAL.Data.Models
 {
-    public class Department
+    public class Department:Base
     {
         [Key]
         public String Code { get; set; } = string.Empty;
-        public String Name { get; set; }= string.Empty;
         public virtual ICollection<Student> Stduents { get; set; } = new List<Student>();
         public virtual ICollection<CourseDepartment> CourseDepartments { get; set; } = new List<CourseDepartment>();
 

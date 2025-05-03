@@ -103,9 +103,6 @@ namespace StudentGuide.BLL.Services.Courses
             }).ToList();
             return allCoursesDto;
         }
-
-
-
           public async Task<CourseReadPagnationDto> GetAllCoursesInPagnation(int page, int countPerPage)
           {
               var allCourses = await _unitOfWork.CourseRepo.GetAllCoursesInPagnation(page, countPerPage);
@@ -152,7 +149,7 @@ namespace StudentGuide.BLL.Services.Courses
         {
             var courses = await _unitOfWork.CourseRepo.GetAll();
 
-            var materialDto = courses.Select(p => new CourseReadDto
+            var courseDto = courses.Select(p => new CourseReadDto
             {
                Code= p.Code,
                NameOfCourse= p.Name,
@@ -162,22 +159,22 @@ namespace StudentGuide.BLL.Services.Courses
                Semesters = p.Semesters.ToList(),
                DepartmentIds=p.CourseDepartments.Select(p=> p.DepartmentsCode).ToList(),
             }).ToList();
-            if (string.IsNullOrWhiteSpace(Keyword)) return materialDto;
+            if (string.IsNullOrWhiteSpace(Keyword)) return courseDto;
 
             Keyword = Keyword.Trim().ToLower();
 
             // Step 2: Fuzzy filter in memory
-            var results = materialDto
-                .Select(m => new
+            var results = courseDto
+                .Select(c => new
                 {
-                    Material = m,
-                    Score = Fuzz.TokenSetRatio(Keyword, $"{m.NameOfCourse}{m.Code}")
+                    Course = c,
+                    Score = Fuzz.TokenSetRatio(Keyword, $"{c.NameOfCourse}{c.Code}")
                 })
                 .Where(x => x.Score > 30) // You can adjust this threshold
                 .OrderByDescending(x => x.Score)
-                .Select(x => x.Material)
+                .Select(x => x.Course)
                 .ToList();
-
+            if (!results.Any()) return courseDto;
             return results;
         }
 
@@ -189,7 +186,7 @@ namespace StudentGuide.BLL.Services.Courses
             {
                 throw new Exception("No Student Found");
             }
-
+            var departmentCodeForStudent = student.DepartmentCode;
             var maxHours = await _studentService.GetMaxHours(code);
             var checkSemester = ConstantData.SemestersByName[student.Semester];
 
@@ -197,7 +194,10 @@ namespace StudentGuide.BLL.Services.Courses
 
             // Get courses based on the student's semester (even or odd)
             var allCourses = await _unitOfWork.CourseRepo.GetAllAsync();
-
+            // Handling other semesters
+            var passedCourses = courses
+                .Where(c => c.Students.Any(s => s.StudentId == code && s.IsPassed))
+                .ToList();
             if (checkSemester % 2 == 0 && checkSemester != 0)
             {
                 courses = allCourses.Where(c =>
@@ -230,10 +230,7 @@ namespace StudentGuide.BLL.Services.Courses
                 };
             }
 
-            // Handling other semesters
-            var passedCourses = courses
-                .Where(c => c.Students.Any(s => s.StudentId == code && s.IsPassed))
-                .ToList();
+            
 
             var passedCoursesCode = passedCourses.Select(c => c.Code).ToList();
 
@@ -258,7 +255,9 @@ namespace StudentGuide.BLL.Services.Courses
 
             var availableCoursesFiltered = courses
                 .Where(c => !c.Students.Any(s => s.StudentId == code && s.IsPassed)
-                    && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p))))
+                    && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p)))
+                    && c.CourseDepartments.Any(d => d.DepartmentsCode == departmentCodeForStudent || d.DepartmentsCode=="General")
+                    )
                 .Select(c => _helper.MapToCourseReadDto(c))
                 .ToList();
 

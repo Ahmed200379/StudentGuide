@@ -9,6 +9,9 @@ namespace StudentGuide.API.Helpers
         CourseReadDto MapToCourseReadDto(Course course);
         public void MapStudentEditDtoToStudent(StudentEditDto editStudent, Student student);
         public bool HasDuplicates(List<string> items);
-
+        public int GoToNextSemester(int hours, int currentSemester);
+        public double CalculatePointForCourse(int grade);
+        public double CalculateGPA(IEnumerable<StudentCourse> passedCourses);
+        public String GetGradeWithSymbol(int grade);
     }
 }

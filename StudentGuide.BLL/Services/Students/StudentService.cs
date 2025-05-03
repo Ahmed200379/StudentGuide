@@ -1,5 +1,7 @@
-﻿using StudentGuide.API.Helpers;
+﻿using FuzzySharp;
+using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Constant;
+using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
@@ -61,7 +63,6 @@ namespace StudentGuide.BLL.Services.Students
                 Password = newStudent.StudentPassword,
                 Gpa = newStudent.StudentGpa,
                 Hours = newStudent.TotalHours,
-                Date = newStudent.DateOfRegister,
                 Photo = newStudent.StudentPhoto,
                 BirthDate = newStudent.BirthDateOfStudent,
                 PhoneNumber = newStudent.PhoneNumber,
@@ -76,7 +77,43 @@ namespace StudentGuide.BLL.Services.Students
                 throw new Exception("Failed to add Student");
             }
         }
+        public async Task<List<StudentReadForAdminDto>> Search(string? Keyword)
+        {
+            var students = await _unitOfWork.StudentRepo.GetAll();
+            var studentDto = students.Select(s=> new StudentReadForAdminDto
+            {
 
+                StudentName = s.Name,
+                StudentEmail = s.Email,
+                DepartmentName = s.Department.Name,
+                PhoneNumber = s.PhoneNumber,
+                Semester = s.Semester,
+                BirthDateOfStudent = s.BirthDate,
+                StudentGpa = s.Gpa,
+                StudentPassword = s.Password,
+                StudentPhoto = s.Photo,
+                TotalHours = s.Hours,
+                DateOfRegister = s.Date,
+                StudentId=s.Code,
+            }).ToList();
+            if (string.IsNullOrWhiteSpace(Keyword)) return studentDto;
+
+            Keyword = Keyword.Trim().ToLower();
+
+            // Step 2: Fuzzy filter in memory
+            var results = studentDto
+                .Select(s => new
+                {
+                    Student = s,
+                    Score = Fuzz.TokenSetRatio(Keyword, $"{s.StudentName}{s.StudentId}")
+                })
+                .Where(x => x.Score > 30) // You can adjust this threshold
+                .OrderByDescending(x => x.Score)
+                .Select(x => x.Student)
+                .ToList();
+            if (!results.Any()) return studentDto;
+            return results;
+        }
         public async Task Delete(string code)
         {
             var student=await _unitOfWork.StudentRepo.GetByIdAsync(code);
@@ -133,7 +170,8 @@ namespace StudentGuide.BLL.Services.Students
                     CourseCode=c.Code,
                     Grade=-1,
                     StudentId=student.Code,
-                    IsPassed=false
+                    IsPassed=false,
+                    Semester=student.Semester
                 }).ToList();
             await _unitOfWork.StudentRepo.AddRangeAsync(studentCourses);
             int isAdded = await _unitOfWork.Complete();
@@ -173,7 +211,7 @@ namespace StudentGuide.BLL.Services.Students
 
         public async Task<StudentReadWithCountDto> GetAllSudentsWithCount()
         {
-            var allStudents= await _unitOfWork.StudentRepo.GetAllAsync();
+            var allStudents= await _unitOfWork.StudentRepo.GetAll();
             var allStudentDto = allStudents
                 .Select(p => new StudentReadForAdminDto
                 {
@@ -195,6 +233,7 @@ namespace StudentGuide.BLL.Services.Students
                 StudentReadForAdmins = allStudentDto,
                 TotalCount = allStudents.Count()
             };
+            Console.WriteLine($"=------------------------------{ allStudentsWithCountDto.TotalCount}");
             return allStudentsWithCountDto;
         }
 

@@ -2,6 +2,7 @@
 using StudentGuide.DAL.Repos.CourseRepo;
 using StudentGuide.DAL.Repos.DepartmentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
+using StudentGuide.DAL.Repos.ResultRepo;
 using StudentGuide.DAL.Repos.StudentRepo;
 
 namespace StudentGuide.DAL.UnitOfWork
@@ -14,17 +15,22 @@ namespace StudentGuide.DAL.UnitOfWork
         private readonly IDepartmentRepo _departmentRepo;
         private readonly ICourseRepo _courseRepo;
         private readonly IStudentRepo _studentRepo;
+        private readonly IResultRepo _resultRepo;
         public IMaterialRepo MaterialRepo => _materialRepo;
         public IDepartmentRepo DepartmentRepo => _departmentRepo;
         public ICourseRepo CourseRepo => _courseRepo;
         public IStudentRepo StudentRepo => _studentRepo;
-        public UnitOfWork(ApplicationDbContext context, IMaterialRepo materialRepo, IDepartmentRepo departmentRepo, ICourseRepo courseRepo,IStudentRepo studentRepo)
+
+        public IResultRepo ResultRepo => _resultRepo;
+
+        public UnitOfWork(ApplicationDbContext context, IMaterialRepo materialRepo, IDepartmentRepo departmentRepo, ICourseRepo courseRepo,IStudentRepo studentRepo,IResultRepo resultRepo)
         {
             _context = context;
             _materialRepo = materialRepo;
             _departmentRepo = departmentRepo;
             _courseRepo = courseRepo;
             _studentRepo= studentRepo;
+            _resultRepo = resultRepo;
         }
 
         public async Task<int> Complete()

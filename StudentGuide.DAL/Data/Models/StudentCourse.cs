@@ -22,5 +22,6 @@ namespace StudentGuide.DAL.Data.Models
 
             [Range(-1, 101)]
             public int Grade { get; set; }
+            public String Semester { get; set; }=string.Empty;
         }
 }

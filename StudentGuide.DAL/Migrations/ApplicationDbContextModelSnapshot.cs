@@ -72,7 +72,8 @@ namespace StudentGuide.DAL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Code");
 
@@ -224,6 +225,10 @@ namespace StudentGuide.DAL.Migrations
 
                     b.Property<bool>("IsPassed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Semester")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("StudentId", "CourseCode");
 

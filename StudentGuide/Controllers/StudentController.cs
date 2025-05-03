@@ -84,6 +84,21 @@ namespace StudentGuide.API.Controllers
            
         }
         [HttpGet]
+        [Route("DashBoard/Search")]
+        public async Task<IActionResult> Search([FromQuery]string keyword)
+        {
+            try
+            {
+                var student= await _studentService.Search(keyword);
+                return Ok(student);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+
+        }
+        [HttpGet]
         [Route("DashBoard/GetAllStudentsInpagnation/{page}/{countPerPage}")]
         public async Task<IActionResult> GetAllStudentsInPagnation(int page, int countPerPage)
         {
@@ -141,7 +156,7 @@ namespace StudentGuide.API.Controllers
 
         }
         [HttpDelete]
-        [Route("DashBoard/DeleteStudent")]
+        [Route("DashBoard/DeleteStudent/{code}")]
         public async Task<IActionResult> DeleteById(string code)
         {
             try

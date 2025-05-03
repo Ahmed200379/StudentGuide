@@ -17,7 +17,6 @@ namespace StudentGuide.BLL.Dtos.Student
         public string StudentPassword { get; set; } = string.Empty;
         public double StudentGpa { get; set; }
         public int TotalHours { get; set; }
-        public DateTime DateOfRegister { get; set; } = DateTime.Now;
         public string StudentPhoto { get; set; } = string.Empty;
         public DateTime BirthDateOfStudent { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;

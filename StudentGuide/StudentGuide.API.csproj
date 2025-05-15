@@ -25,4 +25,7 @@
 		<ProjectReference Include="..\StudentGuide.BLL\StudentGuide.BLL.csproj" />
 		<ProjectReference Include="..\StudentGuide.DAL\StudentGuide.DAL.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="assets\images\studentsphotos\" />
+	</ItemGroup>
 </Project>

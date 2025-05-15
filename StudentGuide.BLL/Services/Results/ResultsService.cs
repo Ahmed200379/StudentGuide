@@ -1,15 +1,9 @@
-﻿using Microsoft.VisualBasic;
+﻿using OfficeOpenXml;
 using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Dtos.Result;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace StudentGuide.BLL.Services.Results
 {
     public class ResultsService : IResultsService
@@ -109,17 +103,7 @@ namespace StudentGuide.BLL.Services.Results
                 return resultsDto;
         }
 
-        public Task UpdateResult(IEnumerable<ResultUpdateDto> results)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ResultReadForStudentDto>> GetAllResults(string code, string semester)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<ResultsReadForAllStudents>> ResultsReadForAllStudents(string semester)
+        public async Task<IEnumerable<ResultsReadForAllStudents>> GetAllResultsForAllStudents(string semester)
         {
             var allResults = await _unitOfWork.ResultRepo.GetAllAsync(r => r.Semester == semester);
             if(!allResults.Any() || allResults==null)
@@ -141,6 +125,65 @@ namespace StudentGuide.BLL.Services.Results
                     TotalCount=g.Count()
                 }).ToList();
             return allResultsDto;
+        }
+        [Obsolete]
+        public async Task AddResultWithExcel(Stream results)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var package= new ExcelPackage(results))
+            {
+                var workSheet = package.Workbook.Worksheets[0];
+                int rowCount= workSheet.Dimension.Rows;
+                var resultsList = new List<StudentCourse>();
+                for (int i=2; i<= rowCount; i++)
+                {
+                    var studentId = workSheet.Cells[i, 1]?.Value?.ToString()?.Trim();
+                    var courseId = workSheet.Cells[i, 2]?.Value?.ToString()?.Trim();
+                    var gradeOfFinal = int.TryParse(workSheet.Cells[i, 3]?.Value?.ToString(), out var final) ? final : 0;
+                    var gradeWithoutFinal = int.TryParse(workSheet.Cells[i, 4]?.Value?.ToString(), out var nonFinal) ? nonFinal : 0;
+                    var semester = workSheet.Cells[i, 5]?.Value?.ToString()?.Trim();
+
+                    if (string.IsNullOrEmpty(studentId) || string.IsNullOrEmpty(courseId))
+                        continue;
+                    var result = new StudentCourse()
+                    {
+                        StudentId = studentId,
+                        CourseCode= courseId,
+                        Grade=gradeOfFinal+gradeWithoutFinal,
+                        Semester=semester,
+                        IsPassed=(gradeOfFinal>=15 && (gradeOfFinal+gradeWithoutFinal>=50))
+                        
+                    };
+                  await _unitOfWork.ResultRepo.Update(result);
+                    int isAdded = await _unitOfWork.Complete();
+                    if (isAdded == 0)
+                    {
+                        throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
+                    }
+                    var student = await _unitOfWork.StudentRepo.GetByIdAsync(studentId);
+                    var PassedCourses = await _unitOfWork.ResultRepo.GetAllAsync(r => r.IsPassed && r.StudentId == studentId);
+                    var Hours = PassedCourses.Select(c => c.Course.Hours).Sum();
+                    int currentSemester = ConstantData.SemestersByName[student.Semester];
+                    if (currentSemester % 2 == 0)
+                    {
+                        currentSemester = _helper.GoToNextSemester(Hours, currentSemester);
+                    }
+                    else
+                    {
+                        currentSemester++;
+                    }
+                    var gpa = _helper.CalculateGPA(PassedCourses);
+                    student.Semester = ConstantData.SemestersByNumber[currentSemester];
+                    student.Gpa = gpa;
+                    await _unitOfWork.StudentRepo.Update(student);
+                    int isUpdated = await _unitOfWork.Complete();
+                    if (isAdded == 0)
+                    {
+                        throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
+                    }
+                }
+            }
+
         }
     }
 }

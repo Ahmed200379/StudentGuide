@@ -48,9 +48,9 @@ namespace StudentGuide.BLL.Services.Courses
             }
         }
 
-        public async Task DeleteCourse(int id)
+        public async Task DeleteCourse(string code)
         {
-            var deletedCourse = await _unitOfWork.CourseRepo.GetByIdAsync(id);
+            var deletedCourse = await _unitOfWork.CourseRepo.GetByIdAsync(code);
             if (deletedCourse == null)
             {
                 throw new Exception("Course not exist");

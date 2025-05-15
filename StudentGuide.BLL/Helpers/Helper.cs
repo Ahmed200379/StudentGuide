@@ -1,4 +1,5 @@
-﻿using StudentGuide.BLL.Constant;
+﻿using Microsoft.AspNetCore.Http;
+using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Dtos.Course;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
@@ -26,7 +27,7 @@ namespace StudentGuide.API.Helpers
                 DepartmentIds = course.CourseDepartments.Select(d => d.DepartmentsCode).ToList()
             };
         }
-        public void MapStudentEditDtoToStudent(StudentEditDto editStudent, Student student)
+        public async void MapStudentEditDtoToStudent(StudentEditDto editStudent, Student student)
         {
             student.Code = editStudent.StudentId;
             student.Name = editStudent.StudentName;
@@ -34,7 +35,7 @@ namespace StudentGuide.API.Helpers
             student.Password = editStudent.StudentPassword;
             student.Gpa = editStudent.StudentGpa;
             student.Hours = editStudent.TotalHours;
-            student.Photo = editStudent.StudentPhoto;
+            student.Photo = await SaveImage(editStudent.StudentPhoto);
             student.BirthDate = editStudent.BirthDateOfStudent;
             student.PhoneNumber = editStudent.PhoneNumber;
             student.Semester = editStudent.Semester;
@@ -91,6 +92,15 @@ namespace StudentGuide.API.Helpers
             else if (grade >= 60) return "D+";
             else if (grade >= 50) return "D";
             else return "F";
+        }
+
+        public async Task<string> SaveImage(IFormFile file)
+        {
+            var photo = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var path = Path.Combine(photo,ConstantData.ImagesPath);
+            using var steam =File.Create(path);
+            await file.CopyToAsync(steam);
+            return photo;
         }
     }
 

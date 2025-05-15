@@ -8,7 +8,10 @@ namespace StudentGuide.BLL.Constant
 {
     public static class ConstantData
     {
-
+        public const string ImagesPath = "/assets/images/studentphotos";
+        public const string AllowExtentions = ".jpg,.gpeg,.jpng,.png";
+        public const int maxSizeInMB = 5;
+        public const int maxSizeByByets = maxSizeInMB * 1024 * 1024;
         public static readonly Dictionary<int, string> Grades = new Dictionary<int, string>
         {
             { 90, "A+" },

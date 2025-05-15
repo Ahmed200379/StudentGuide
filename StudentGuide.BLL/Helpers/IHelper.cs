@@ -1,4 +1,5 @@
-﻿using StudentGuide.BLL.Dtos.Course;
+﻿using Microsoft.AspNetCore.Http;
+using StudentGuide.BLL.Dtos.Course;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
 
@@ -13,5 +14,6 @@ namespace StudentGuide.API.Helpers
         public double CalculatePointForCourse(int grade);
         public double CalculateGPA(IEnumerable<StudentCourse> passedCourses);
         public String GetGradeWithSymbol(int grade);
+        public Task<String> SaveImage(IFormFile file);
     }
 }

@@ -63,7 +63,7 @@ namespace StudentGuide.BLL.Services.Students
                 Password = newStudent.StudentPassword,
                 Gpa = newStudent.StudentGpa,
                 Hours = newStudent.TotalHours,
-                Photo = newStudent.StudentPhoto,
+                Photo = await _helper.SaveImage(newStudent.StudentPhoto),
                 BirthDate = newStudent.BirthDateOfStudent,
                 PhoneNumber = newStudent.PhoneNumber,
                 Semester = newStudent.Semester,
@@ -80,7 +80,7 @@ namespace StudentGuide.BLL.Services.Students
         public async Task<List<StudentReadForAdminDto>> Search(string? Keyword)
         {
             var students = await _unitOfWork.StudentRepo.GetAll();
-            var studentDto = students.Select(s=> new StudentReadForAdminDto
+            var studentDto = students.Select( s=> new StudentReadForAdminDto
             {
 
                 StudentName = s.Name,
@@ -123,27 +123,38 @@ namespace StudentGuide.BLL.Services.Students
             }
            await _unitOfWork.StudentRepo.Delete(student);
             int isDeleted = await _unitOfWork.Complete();
-            if (isDeleted == 0)
+            if (isDeleted > 0)
+            {
+                var photo = Path.Combine(ConstantData.ImagesPath, student.Photo);
+                File.Delete(photo);
+            }
+            else
             {
                 throw new Exception(Exceptions.ExceptionMessages.GetDeleteFailedMessage("Student"));
             }
+
         }
 
         public async Task EditStudent(StudentEditDto editStudent)
         {
             var student = await _unitOfWork.StudentRepo.GetByIdAsync(editStudent.StudentId);
-            if(student==null)
+            var oldPhoto = student.Photo;
+            if (student==null)
             {
                 throw new Exception("Student does not found");
             }
             _helper.MapStudentEditDtoToStudent(editStudent, student);
            await _unitOfWork.StudentRepo.Update(student);
             int isUpdated = await _unitOfWork.Complete();
-            if(isUpdated ==0)
+            if(isUpdated >0)
+            {
+                var photo = Path.Combine(ConstantData.ImagesPath, oldPhoto);
+                File.Delete(photo);
+            }
+            else
             {
                 throw new Exception("Faild to update");
             }
-
         }
 
         public async Task EnrollCourses(StudentErollDto studentErollDto)
@@ -233,7 +244,6 @@ namespace StudentGuide.BLL.Services.Students
                 StudentReadForAdmins = allStudentDto,
                 TotalCount = allStudents.Count()
             };
-            Console.WriteLine($"=------------------------------{ allStudentsWithCountDto.TotalCount}");
             return allStudentsWithCountDto;
         }
 

@@ -65,12 +65,12 @@ namespace StudentGuide.API.Controllers
             }
         }
          [HttpDelete]
-        [Route("Dashboard/DeleteCourse/{id}")]
-        public async Task<IActionResult> DeleteCourse(int id)
+        [Route("Dashboard/DeleteCourse/{code}")]
+        public async Task<IActionResult> DeleteCourse(String code)
         {
             try
             {
-                await _courseService.DeleteCourse(id);
+                await _courseService.DeleteCourse(code);
                 return Ok(new {message="Course deleted successfuly"});
                 
             }catch(Exception ex)
@@ -79,7 +79,7 @@ namespace StudentGuide.API.Controllers
             }
         }
         [HttpGet]
-        [Route("GetAllCoursesInPagnation/{page}/{countPerPage}")]
+        [Route("DashBoard/GetAllCoursesInPagnation/{page}/{countPerPage}")]
         public async Task<IActionResult> GetAllCoursesInPagnation(int page, int countPerPage)
         {
             try
@@ -112,7 +112,7 @@ namespace StudentGuide.API.Controllers
 
         }
         [HttpGet]
-        [Route("GetAllCourses")]
+        [Route("DashBoard/GetAllCourses")]
         public async Task<IActionResult> GetAllCourses()
         {
             try

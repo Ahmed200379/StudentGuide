@@ -10,11 +10,9 @@ namespace StudentGuide.BLL.Services.Results
    public interface IResultsService
     {
         public Task AddResult(IEnumerable<ResultAddDto> results);
-        public Task UpdateResult(IEnumerable<ResultUpdateDto> results);
-        public Task<IEnumerable<ResultReadForStudentDto>> GetAllResults(string code,string semester);
         public Task<IEnumerable<ResultReadForAdminDto>> GetAllResultForAdmin(String code, string semester);
-        public Task<IEnumerable<ResultsReadForAllStudents>> ResultsReadForAllStudents(string semester);
-
+        public Task<IEnumerable<ResultsReadForAllStudents>> GetAllResultsForAllStudents(string semester);
+        public Task AddResultWithExcel(Stream results);
 
     }
 }

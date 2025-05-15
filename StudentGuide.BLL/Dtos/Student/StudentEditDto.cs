@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GameZone.Validation;
+using Microsoft.AspNetCore.Http;
+using StudentGuide.BLL.Constant;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +17,9 @@ namespace StudentGuide.BLL.Dtos.Student
         public string StudentPassword { get; set; } = string.Empty;
         public double StudentGpa { get; set; }
         public int TotalHours { get; set; }
-        public string StudentPhoto { get; set; } = string.Empty;
+        [AllowedExtention(ConstantData.AllowExtentions),
+            MaxSize(ConstantData.maxSizeByByets)]
+        public IFormFile StudentPhoto { get; set; } = default!;
         public DateTime BirthDateOfStudent { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string Semester { get; set; } = "Semester1";

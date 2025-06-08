@@ -15,21 +15,6 @@ namespace StudentGuide.API.Controllers
         {
             _accountService = accountService;
         }
-        // GET: api/<AccountController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<AccountController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<AccountController>
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto newUser)
         {

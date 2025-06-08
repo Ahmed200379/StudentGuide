@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.BLL.Dtos.Account
 {
-   public class RegisterationResonseDto
+   public class ResonseDto
     {
         public string StudentId { get; set; }
         public string Message { get; set; }

@@ -1,14 +1,7 @@
 ﻿using StudentGuide.DAL.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameZone.Validation;
 using Microsoft.AspNetCore.Http;
-using StudentGuide.BLL.Constant;
+
 
 namespace StudentGuide.BLL.Dtos.Account
 {

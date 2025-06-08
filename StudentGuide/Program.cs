@@ -51,10 +51,15 @@ public class Program
  );
         #endregion
         #region Identity
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-           .AddEntityFrameworkStores<ApplicationDbContext>();
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+        }).AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
         #endregion
+        builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
         #region Authantication
+        builder.Services.AddMemoryCache();
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

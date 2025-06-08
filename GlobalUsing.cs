@@ -41,3 +41,6 @@ using StudentGuide.DAL.Repos.StudentRepo;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
+using StudentGuide.DAL.Data.Models;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;

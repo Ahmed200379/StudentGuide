@@ -52,16 +52,48 @@ namespace StudentGuide.API.Controllers
            
         }
 
-        // PUT api/<AccountController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginDto user)
         {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _accountService.Login(user);
+                if (result.IsAuthenticated == false)
+                {
+                    return BadRequest(result.Message);
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE api/<AccountController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpPost("ForgetPassword")]
+        public async Task<IActionResult> ForgetPaaword([FromBody]string email)
         {
+            if(email == null)
+            {
+                return BadRequest("You should enter a message");
+            }
+            var response= await _accountService.ForgetPassword(email);
+            return Ok(response);
+        }
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await _accountService.ResetPassword(resetPasswordDto);
+            return Ok(response);
         }
     }
 }
+

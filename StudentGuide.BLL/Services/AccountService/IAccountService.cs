@@ -9,6 +9,9 @@ namespace StudentGuide.BLL.Services.AccountService
 {
    public interface IAccountService
     {
-        public Task<RegisterationResonseDto> Register(RegisterDto registerDto);
+        public Task<ResonseDto> Register(RegisterDto registerDto);
+        public Task<ResonseDto> Login(LoginDto loginDto);
+        public Task<MessageResponseDto> ForgetPassword(string email);
+        public Task<MessageResponseDto> ResetPassword(ResetPasswordDto newPass);
     }
 }

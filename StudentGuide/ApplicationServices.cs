@@ -14,6 +14,8 @@ using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Services.Results;
 using StudentGuide.DAL.Repos.ResultRepo;
 using StudentGuide.BLL.Services.AccountService;
+using StudentGuide.BLL.Services.Email;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace StudentGuide.API
 {
@@ -34,6 +36,7 @@ namespace StudentGuide.API
             services.AddScoped<IResultsService, ResultsService>();
             services.AddScoped<IAccountService,AccountService>();
             services.AddScoped<IHelper, Helper>();
+            services.AddScoped<IMailingService, MailingService>();
             services.AddScoped<HashIdService>();
 
         }

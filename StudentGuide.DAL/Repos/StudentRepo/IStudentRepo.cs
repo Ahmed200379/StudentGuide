@@ -12,10 +12,11 @@ namespace StudentGuide.DAL.Repos.StudentRepo
    public interface IStudentRepo:IBaseRepo<Student>
     {
         public Task<IEnumerable<Student>> GetAllStudentsInPagnation(int count, int countPerPage);
-        Task<IEnumerable<Student>> GetAllAsync(Expression<Func<Student, bool>>? expression = null);
+        public Task<IEnumerable<Student>> GetAllAsync(Expression<Func<Student, bool>>? expression = null);
         public Task AddRangeAsync(List<StudentCourse> studentCourses);
-        Task<Student?> GetByIdAsync(String code);
+        public Task<Student?> GetByIdAsync(String code);
         public Task<IEnumerable<Student>> GetAll();
+
 
     }
 }

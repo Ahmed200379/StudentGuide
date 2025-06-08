@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using StudentGuide.BLL.Dtos.Account;
 using StudentGuide.BLL.Dtos.Admin;
+using StudentGuide.BLL.Dtos.Email;
+using StudentGuide.BLL.Services.Email;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
 using System;
@@ -17,11 +19,13 @@ namespace StudentGuide.BLL.Services.ManagementService
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public ManagementService(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager)
+        private readonly IMailingService _mailingService;
+        public ManagementService(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager,IMailingService mailingService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
+            _mailingService = mailingService;
         }
         public async Task<MessageResponseDto> AddAdmin(AdminAddDto adminAddDto)
         {
@@ -67,6 +71,20 @@ namespace StudentGuide.BLL.Services.ManagementService
             };
         }
 
-      
+        public async Task<MessageResponseDto> SendMessageToEmail(EmailRequestDto emailRequestDto)
+        {
+            var Students = await _unitOfWork.StudentRepo.GetAll();
+            var emailsOfStudents= Students.Select(s => s.Email).ToList();
+            foreach(var email in emailsOfStudents)
+            {
+                await _mailingService.SendEmailAsync(email, emailRequestDto.Subject, emailRequestDto.Body);
+            }
+            return new MessageResponseDto
+            {
+                Date = DateTime.Now,
+                IsSuccessed = true,
+                Message = "successsfully send all messages"
+            };
+        }
     }
 }

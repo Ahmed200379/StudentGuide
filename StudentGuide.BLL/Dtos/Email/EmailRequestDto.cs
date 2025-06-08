@@ -8,6 +8,7 @@ namespace StudentGuide.BLL.Dtos.Email
 {
    public class EmailRequestDto
     {
-
+        public string Subject { get; set; }=string.Empty;
+        public string Body { get; set; } = string.Empty;
     }
 }

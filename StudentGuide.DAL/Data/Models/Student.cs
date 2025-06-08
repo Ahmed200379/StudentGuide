@@ -19,7 +19,7 @@ namespace StudentGuide.DAL.Data.Models
         public Double Gpa { get; set; }
         public int Hours { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
-        public String Photo { get; set; } = string.Empty;
+        public String? Photo { get; set; }
         public DateTime BirthDate { get; set; }
         [MaxLength(11)]
         public String PhoneNumber { get; set; } = string.Empty;
@@ -29,6 +29,7 @@ namespace StudentGuide.DAL.Data.Models
         public Department Department { get; set; }
         [ForeignKey("Department")]
         public string DepartmentCode { get; set; }
-
+        public string? ApplicationUserId { get; set; }  
+        public virtual ApplicationUser? ApplicationUser { get; set; }
     }
 }

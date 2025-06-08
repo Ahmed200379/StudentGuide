@@ -1,11 +1,4 @@
 ﻿using StudentGuide.BLL.Dtos.Course;
-using StudentGuide.BLL.Dtos.Material;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace StudentGuide.BLL.Services.Courses
 {
    public interface ICourseService
@@ -18,5 +11,6 @@ namespace StudentGuide.BLL.Services.Courses
         public Task<CourseReadPagnationDto> GetAllCoursesInPagnation(int page, int countPerPage);
         public Task<List<CourseReadDto>> Search(String Keyword);
         public Task<CourseReadForStudentDto> GetAllCoursesForStudent(string code);
+        public Task<IEnumerable<CourseReadDto>> GetRecommendationCourses(string code);
     }
 }

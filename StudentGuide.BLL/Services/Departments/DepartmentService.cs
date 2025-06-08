@@ -1,12 +1,6 @@
 ﻿using StudentGuide.BLL.Dtos.Department;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace StudentGuide.BLL.Services.Departments
 {
    public class DepartmentService:IDepartmentService

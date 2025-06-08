@@ -24,12 +24,12 @@ namespace StudentGuide.API.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                 await _courseService.AddCourse(newCourse);
+                await _courseService.AddCourse(newCourse);
                 return Ok(new { message = "Course Added Successfully" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new {message= ex.InnerException?.Message ?? ex.Message });
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
 
             }
         }
@@ -43,7 +43,7 @@ namespace StudentGuide.API.Controllers
                     return BadRequest(ModelState);
                 }
                 await _courseService.EditCourse(courseEditDto);
-                return Ok(new { message= "Course Updated Successfully" });
+                return Ok(new { message = "Course Updated Successfully" });
             }
             catch (Exception ex)
             {
@@ -64,16 +64,16 @@ namespace StudentGuide.API.Controllers
                 return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
             }
         }
-         [HttpDelete]
+        [HttpDelete]
         [Route("Dashboard/DeleteCourse/{code}")]
         public async Task<IActionResult> DeleteCourse(String code)
         {
             try
             {
                 await _courseService.DeleteCourse(code);
-                return Ok(new {message="Course deleted successfuly"});
-                
-            }catch(Exception ex)
+                return Ok(new { message = "Course deleted successfuly" });
+
+            } catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
             }
@@ -85,7 +85,7 @@ namespace StudentGuide.API.Controllers
             try
             {
                 var courses = await _courseService.GetAllCoursesInPagnation(page, countPerPage);
-                    return Ok(courses);
+                return Ok(courses);
             }
             catch (Exception ex)
             {
@@ -98,7 +98,7 @@ namespace StudentGuide.API.Controllers
         {
             try
             {
-                if(!ModelState.IsValid )
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -132,12 +132,30 @@ namespace StudentGuide.API.Controllers
         {
             try
             {
-               if(!ModelState.IsValid )
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-               var availableCourses= await _courseService.GetAllCoursesForStudent(code);
+                var availableCourses = await _courseService.GetAllCoursesForStudent(code);
                 return Ok(availableCourses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+        [HttpGet]
+        [Route("GetAllRecommendationCourses/{code}")]
+        public async Task<IActionResult> GetAllRecommendationCourses(string code)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var recommendationCourses = await _courseService.GetRecommendationCourses(code);
+                return Ok(recommendationCourses);
             }
             catch (Exception ex)
             {

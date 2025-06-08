@@ -1,23 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentGuide.DAL.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace StudentGuide.DAL.Data.Context
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Student> Stduents { get; set; }
+        public DbSet<Document> Documents { get; set; }
         //payment
         //jwt
+        //ci/cd
+        //docker
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,7 +62,12 @@ namespace StudentGuide.DAL.Data.Context
             modelBuilder.Entity<Material>()
                 .HasIndex(m => m.Name)
                 .HasDatabaseName("IX_Material_Name");
+            modelBuilder.Entity<ApplicationUser>()
+            .HasOne(a => a.Student)
+            .WithOne(s => s.ApplicationUser)
+            .HasForeignKey<ApplicationUser>(a => a.StudentCode);
             base.OnModelCreating(modelBuilder);
+          
         }
     }
 }

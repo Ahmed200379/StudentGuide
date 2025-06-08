@@ -6,26 +6,27 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using GameZone.Validation;
+using Microsoft.AspNetCore.Http;
 using StudentGuide.BLL.Constant;
 
-namespace StudentGuide.BLL.Dtos.Student
+namespace StudentGuide.BLL.Dtos.Account
 {
-   public class StudentAddDto
+   public class RegisterDto
     {
         public string StudentId { get; set; } = string.Empty;
         public string StudentName { get; set; } = string.Empty;
         public string StudentEmail { get; set; } = string.Empty;
         public string StudentPassword { get; set; } = string.Empty;
-        public double StudentGpa { get; set; }
-        public int TotalHours { get; set; }
-        [AllowedExtention(ConstantData.AllowExtentions),
-            MaxSize(ConstantData.maxSizeByByets)]
+        [Compare("StudentPassword", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public double StudentGpa { get; set; } = 0;
+        public int TotalHours { get; set; } = 0;
         public IFormFile? StudentPhoto { get; set; } = default!;
         public DateTime BirthDateOfStudent { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string Semester { get; set; } = "Semester1";
-        public string DepartmentCode {  get; set; } = string.Empty;
+        public Role? role { get; set; } = Role.Student;
+        public string DepartmentCode { get; set; } = string.Empty;
     }
 }

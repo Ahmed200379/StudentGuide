@@ -13,6 +13,7 @@ using StudentGuide.BLL.Services.Students;
 using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Services.Results;
 using StudentGuide.DAL.Repos.ResultRepo;
+using StudentGuide.BLL.Services.AccountService;
 
 namespace StudentGuide.API
 {
@@ -31,6 +32,7 @@ namespace StudentGuide.API
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IResultRepo, ResultRepo>();
             services.AddScoped<IResultsService, ResultsService>();
+            services.AddScoped<IAccountService,AccountService>();
             services.AddScoped<IHelper, Helper>();
             services.AddScoped<HashIdService>();
 

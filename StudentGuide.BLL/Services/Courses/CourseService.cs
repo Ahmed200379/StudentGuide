@@ -4,8 +4,8 @@ using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
 using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Services.Students;
-using Microsoft.EntityFrameworkCore.Design;
 using StudentGuide.API.Helpers;
+using System.Linq;
 namespace StudentGuide.BLL.Services.Courses
 {
     public class CourseService : ICourseService
@@ -268,5 +268,63 @@ namespace StudentGuide.BLL.Services.Courses
                 MaxHours = maxHours
             };
         }
+
+        public async Task<IEnumerable<CourseReadDto>> GetRecommendationCourses(string code)
+        {
+            var student = await _unitOfWork.StudentRepo.GetByIdAsync(code);
+            if (student == null)
+            {
+                throw new Exception("Student not found");
+            }
+
+            var studentSemester = ConstantData.SemestersByName[student.Semester];
+            var allCourses = await GetAllCoursesForStudent(code);
+            if (allCourses == null || !allCourses.AllAvaliableCourses.Any())
+            {
+                return new List<CourseReadDto>();
+            }
+
+            var prevObligatory = new List<CourseReadDto>();
+            var currentObligatory = new List<CourseReadDto>();
+            var prevOptional = new List<CourseReadDto>();
+            var currentOptional = new List<CourseReadDto>();
+            var other = new List<CourseReadDto>();
+
+            foreach (var course in allCourses.AllAvaliableCourses)
+            {
+                var semesterNumbers = course.Semesters
+                    .Where(s => ConstantData.SemestersByName.ContainsKey(s))
+                    .Select(s => ConstantData.SemestersByName[s])
+                    .ToList();
+
+                if (semesterNumbers.Contains(studentSemester))
+                {
+                    if (course.MandatoryCourse)
+                        currentObligatory.Add(course);
+                    else
+                        currentOptional.Add(course);
+                }
+                else if (semesterNumbers.Any(s => s < studentSemester))
+                {
+                    if (course.MandatoryCourse)
+                        prevObligatory.Add(course);
+                    else
+                        prevOptional.Add(course);
+                }
+                else
+                {
+                    other.Add(course);
+                }
+            }
+
+            // Final recommendation order: prevObligatory → currentObligatory → prevOptional → currentOptional → other
+            return prevObligatory
+                .Concat(currentObligatory)
+                .Concat(prevOptional)
+                .Concat(currentOptional)
+                .Concat(other)
+                .ToList();
+        }
+
     }
 }

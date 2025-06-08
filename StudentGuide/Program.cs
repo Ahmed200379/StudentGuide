@@ -1,14 +1,16 @@
 
 using HashidsNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using StudentGuide.API;
-using StudentGuide.BLL.Services.Materials;
 using StudentGuide.DAL.Data.Context;
-using StudentGuide.DAL.Repos.MaterialRepo;
-using StudentGuide.DAL.UnitOfWork;
+using StudentGuide.DAL.Data.Models;
 using System.Text.Json.Serialization;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 namespace StudentGuide;
 
 public class Program
@@ -29,8 +31,10 @@ public class Program
                 });
         });
         builder.Services.AddControllers();
+        
         // Configure Hashids
         builder.Services.AddSingleton<IHashids>(_ => new Hashids("135790$$$%%#^#2^f", 8));
+
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
         builder.Services.AddEndpointsApiExplorer();
@@ -45,9 +49,32 @@ public class Program
         .UseSqlServer(builder.Configuration.GetConnectionString("connection"),
          b => b.MigrationsAssembly("StudentGuide.DAL"))
  );
-
-
         #endregion
+        #region Identity
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+           .AddEntityFrameworkStores<ApplicationDbContext>();
+        #endregion
+        #region Authantication
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            string? stringKey = builder.Configuration.GetValue<string>("SecretKey");
+            byte[] keyASBytes = Encoding.ASCII.GetBytes(stringKey!);
+            SymmetricSecurityKey key = new SymmetricSecurityKey(keyASBytes);
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = key,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+            };
+        });
+        #endregion
+
         #region Services
         builder.Services.RegisterServices();
         #endregion

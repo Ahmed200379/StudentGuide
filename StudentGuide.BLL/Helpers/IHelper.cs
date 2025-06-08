@@ -2,6 +2,7 @@
 using StudentGuide.BLL.Dtos.Course;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace StudentGuide.API.Helpers
 {
@@ -15,5 +16,6 @@ namespace StudentGuide.API.Helpers
         public double CalculateGPA(IEnumerable<StudentCourse> passedCourses);
         public String GetGradeWithSymbol(int grade);
         public Task<String> SaveImage(IFormFile file);
+        public Task<JwtSecurityToken> CreateToken(ApplicationUser user);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace StudentGuide.BLL.Constant
 {
-  public class Exceptions
+    public class Exceptions
     {
         public static class ExceptionMessages
         {
@@ -28,6 +28,7 @@
             {
                 return $"{entity} already exists.";
             }
+
         }
     }
 }

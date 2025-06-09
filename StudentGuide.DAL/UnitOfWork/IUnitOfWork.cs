@@ -3,6 +3,7 @@ using StudentGuide.DAL.Repos;
 using StudentGuide.DAL.Repos.BaseRepo;
 using StudentGuide.DAL.Repos.CourseRepo;
 using StudentGuide.DAL.Repos.DepartmentRepo;
+using StudentGuide.DAL.Repos.DocumentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
 using StudentGuide.DAL.Repos.ResultRepo;
 using StudentGuide.DAL.Repos.StudentRepo;
@@ -21,6 +22,7 @@ namespace StudentGuide.DAL.UnitOfWork
         ICourseRepo CourseRepo { get; }
         IStudentRepo StudentRepo { get; }
         IResultRepo ResultRepo { get; }
+        IDocumentRepo DocumentRepo { get; }
         public Task<int> Complete();
     }
 }

@@ -9,7 +9,7 @@ namespace StudentGuide.DAL.Data.Models
 {
    public class Document:Base
     {
-     [Key]   
+        [Key]   
         public String Id { get; set; }= Guid.NewGuid().ToString();
         [Required]
         public string Link { get; set; }=string.Empty;

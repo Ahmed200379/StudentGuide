@@ -32,7 +32,7 @@ namespace StudentGuide.API.Controllers
                 return Ok(result);
             }catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest( ex.InnerException);
             }
            
         }

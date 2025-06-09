@@ -17,6 +17,8 @@ using StudentGuide.BLL.Services.AccountService;
 using StudentGuide.BLL.Services.Email;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using StudentGuide.BLL.Services.ManagementService;
+using StudentGuide.BLL.Services.DocumentService;
+using StudentGuide.DAL.Repos.DocumentRepo;
 
 namespace StudentGuide.API
 {
@@ -39,6 +41,8 @@ namespace StudentGuide.API
             services.AddScoped<IHelper, Helper>();
             services.AddScoped<IMailingService, MailingService>();
             services.AddScoped<IManagementService, ManagementService>();
+            services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IDocumentRepo, DocumentRepo>();
             services.AddScoped<HashIdService>();
 
         }

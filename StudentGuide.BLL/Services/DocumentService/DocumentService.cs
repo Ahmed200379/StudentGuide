@@ -59,6 +59,7 @@ namespace StudentGuide.BLL.Services.DocumentService
 
             return allDocuments.Select(p => new DocumentReadDto
             {
+                Id=p.Id,
                 NameOfDocument = p.Name,
                 LinkOfDocument = p.Link
             });
@@ -73,6 +74,7 @@ namespace StudentGuide.BLL.Services.DocumentService
             {
                 Documents = docs.Select(d => new DocumentReadDto
                 {
+                    Id = d.Id,
                     NameOfDocument = d.Name,
                     LinkOfDocument = d.Link
                 }).ToList(),
@@ -87,6 +89,7 @@ namespace StudentGuide.BLL.Services.DocumentService
             {
                 Documents = docs.Select(d => new DocumentReadDto
                 {
+                    Id = d.Id,
                     NameOfDocument = d.Name,
                     LinkOfDocument = d.Link
                 }).ToList(),
@@ -113,6 +116,7 @@ namespace StudentGuide.BLL.Services.DocumentService
 
             return new DocumentReadDto
             {
+                Id = doc.Id,
                 NameOfDocument = doc.Name,
                 LinkOfDocument = doc.Link
             };
@@ -123,6 +127,7 @@ namespace StudentGuide.BLL.Services.DocumentService
             var docs = await _unitOfWork.DocumentRepo.GetAll();
             var all = docs.Select(d => new DocumentReadDto
             {
+                Id = d.Id,
                 NameOfDocument = d.Name,
                 LinkOfDocument = d.Link
             }).ToList();

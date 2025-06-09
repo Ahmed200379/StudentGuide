@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="8.0.3" />
     <PackageReference Include="Hashids.net" Version="1.7.0" />
+    <PackageReference Include="Stripe.net" Version="48.2.0" />
   </ItemGroup>
 
   <ItemGroup>

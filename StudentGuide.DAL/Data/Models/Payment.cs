@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.DAL.Data.Models
 {
-    public enum PaymentMethod
+    public enum PaymentMethods
     {
         Vodaphone,
         Fawry,
@@ -23,9 +23,9 @@ namespace StudentGuide.DAL.Data.Models
         [Range(0, 10000)]
         public Double Amount { get; set; }
         public DateTime Payment_Date { get; set; }
-        [EnumDataType(typeof(PaymentMethod))]
+        [EnumDataType(typeof(PaymentMethods))]
         [Column(TypeName = "nvarchar(20)")]
-        public PaymentMethod PaymentMethod { get; set; }
+        public PaymentMethods PaymentMethod { get; set; }
         public bool IsPayable { get; set; } = false;
         public Student stduent { get; set; }
         [ForeignKey("Stduent")]

@@ -11,6 +11,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Stripe;
+using StudentGuide.BLL.Dtos.Payment;
 namespace StudentGuide;
 
 public class Program
@@ -58,6 +60,8 @@ public class Program
         .AddDefaultTokenProviders();
         #endregion
         builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
+        builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+        StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
         #region Authantication
         builder.Services.AddMemoryCache();
         builder.Services.AddAuthentication(options =>

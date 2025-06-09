@@ -5,6 +5,7 @@ using StudentGuide.DAL.Repos.CourseRepo;
 using StudentGuide.DAL.Repos.DepartmentRepo;
 using StudentGuide.DAL.Repos.DocumentRepo;
 using StudentGuide.DAL.Repos.MaterialRepo;
+using StudentGuide.DAL.Repos.PaymentRepo;
 using StudentGuide.DAL.Repos.ResultRepo;
 using StudentGuide.DAL.Repos.StudentRepo;
 using System;
@@ -23,6 +24,7 @@ namespace StudentGuide.DAL.UnitOfWork
         IStudentRepo StudentRepo { get; }
         IResultRepo ResultRepo { get; }
         IDocumentRepo DocumentRepo { get; }
+        IPaymentRepo PaymentRepo { get; }
         public Task<int> Complete();
     }
 }

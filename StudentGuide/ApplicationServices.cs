@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using StudentGuide.BLL.Services.ManagementService;
 using StudentGuide.BLL.Services.DocumentService;
 using StudentGuide.DAL.Repos.DocumentRepo;
+using StudentGuide.DAL.Repos.PaymentRepo;
+using StudentGuide.BLL.Services.PaymentService;
 
 namespace StudentGuide.API
 {
@@ -43,6 +45,8 @@ namespace StudentGuide.API
             services.AddScoped<IManagementService, ManagementService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDocumentRepo, DocumentRepo>();
+            services.AddScoped<IPaymentRepo,PaymentRepo>();
+            services.AddScoped<IpaymentService, PaymentService>();
             services.AddScoped<HashIdService>();
 
         }

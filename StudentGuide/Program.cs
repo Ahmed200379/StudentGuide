@@ -58,6 +58,11 @@ public class Program
             options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
         }).AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            // Allow Arabic and other Unicode characters in UserName
+            options.User.AllowedUserNameCharacters = null; // Allows all Unicode characters
+        });
         #endregion
         builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
         builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));

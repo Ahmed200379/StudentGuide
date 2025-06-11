@@ -22,8 +22,10 @@ namespace StudentGuide.API.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
+                {                   var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                      .Select(e => e.ErrorMessage)
+                                                      .ToList();
+                    return BadRequest(errors);
                 }
                 var result = await _accountService.Register(newUser);
                 if (result.IsAuthenticated == false)
@@ -78,6 +80,16 @@ namespace StudentGuide.API.Controllers
                 return BadRequest(ModelState);
             }
             var response = await _accountService.ResetPassword(resetPasswordDto);
+            return Ok(response);
+        }
+        [HttpPost("CheckCode")]
+        public async Task<IActionResult> CheckCode([FromBody] CheckCodeDto checkCodeDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await _accountService.ValidateCode(checkCodeDto);
             return Ok(response);
         }
     }

@@ -114,7 +114,7 @@ namespace StudentGuide.BLL.Services.AccountService
             ApplicationUser applicationUser = new()
                 {
                     Student = newStudent,
-                    UserName = registerDto.StudentName,
+                    UserName = registerDto.StudentName.Replace(" ", ""),
                     Email = registerDto.StudentEmail,
                     Id = registerDto.StudentId,
                 };
@@ -164,14 +164,6 @@ namespace StudentGuide.BLL.Services.AccountService
                     Message = "Reset code expired or invalid"
                 };
             }
-            if (cacheData.Code != newPass.Code)
-            {
-                return new MessageResponseDto
-                {
-                    Date = DateTime.Now,
-                    Message = "Reset code is incorrect"
-                };
-            }
             var result = await _userManager.ResetPasswordAsync(user, cacheData.Token, newPass.Password);
             if(!result.Succeeded)
             {
@@ -188,6 +180,42 @@ namespace StudentGuide.BLL.Services.AccountService
                 Message = "You successfully Reset Password"
             };
 
+        }
+
+        public async Task<MessageResponseDto> ValidateCode(CheckCodeDto code)
+        {
+
+            var user = await _userManager.FindByEmailAsync(code.Email);
+            if (user == null)
+            {
+                return new MessageResponseDto
+                {
+                    Date = DateTime.Now,
+                    Message = "There is no user in Specific email"
+                };
+            }
+            if (!_memoryCache.TryGetValue($"Reset_{code.Email}", out dynamic cacheData))
+            {
+                return new MessageResponseDto
+                {
+                    Date = DateTime.Now,
+                    Message = "Reset code expired or invalid"
+                };
+            }
+            if (cacheData.Code != code.Code)
+            {
+                return new MessageResponseDto
+                {
+                    Date = DateTime.Now,
+                    Message = "Reset code is incorrect"
+                };
+            }
+            return new MessageResponseDto
+            {
+                Date = DateTime.Now,
+                IsSuccessed = true,
+                Message = "Code is valid, you can reset your password"
+            };
         }
     }
 }

@@ -76,10 +76,9 @@ namespace StudentGuide.BLL.Services.AccountService
         public async Task<ResonseDto> Register(RegisterDto registerDto)
         {
             var isRegisterEmail = await _userManager.FindByEmailAsync(registerDto.StudentEmail);
-            var isRegisterName = await _userManager.FindByNameAsync(registerDto.StudentName);
             var isRegisterCode = await _userManager.FindByIdAsync(registerDto.StudentId);
 
-            if (isRegisterEmail != null || isRegisterName != null || isRegisterCode != null)
+            if (isRegisterEmail != null || isRegisterCode != null)
             {
                 return new ResonseDto
                 {
@@ -90,20 +89,22 @@ namespace StudentGuide.BLL.Services.AccountService
                 {
                     throw new Exception("InValid College Email");
                 }
-                Student newStudent = new()
-                {
-                    Name = registerDto.StudentName,
-                    Code = registerDto.StudentId,
-                    Email = registerDto.StudentEmail,
-                    Password = registerDto.StudentPassword,
-                    Photo = registerDto.StudentPhoto != null
-                    ? await _helper.SaveImage(registerDto.StudentPhoto)
-                    : null,
-                    BirthDate = registerDto.BirthDateOfStudent,
-                    PhoneNumber = registerDto.PhoneNumber,
-                    Semester = registerDto.Semester,
-                    DepartmentCode = registerDto.DepartmentCode,
-                };
+            Student newStudent = new()
+            {
+                Name = registerDto.StudentName,
+                Code = registerDto.StudentId,
+                Email = registerDto.StudentEmail,
+                Password = registerDto.StudentPassword,
+                Photo = registerDto.StudentPhoto != null
+                ? await _helper.SaveImage(registerDto.StudentPhoto)
+                : null,
+                BirthDate = registerDto.BirthDateOfStudent,
+                PhoneNumber = registerDto.PhoneNumber,
+                Semester = "Semester1",
+                DepartmentCode = "GN",
+                Gpa = 0,
+                Hours = 0
+            };
             await _unitOfWork.StudentRepo.AddAsync(newStudent);
             var isAdded = await _unitOfWork.Complete();
             if (isAdded == 0)

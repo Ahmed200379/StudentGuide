@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using StudentGuide.BLL.Dtos.Payment;
 using StudentGuide.BLL.Services.PaymentService;
-
+using Microsoft.AspNetCore.Authorization;
 namespace StudentGuide.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Student,Admin")]
     public class PaymentController : ControllerBase
     {
         private readonly IpaymentService _paymentService;

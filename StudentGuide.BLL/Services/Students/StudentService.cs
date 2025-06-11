@@ -42,7 +42,6 @@ namespace StudentGuide.BLL.Services.Students
                 return 12;
             }
         }
-
         public async Task AddNewStudent(StudentAddDto newStudent)
         {
             if (newStudent == null)
@@ -61,12 +60,12 @@ namespace StudentGuide.BLL.Services.Students
                 Code = newStudent.StudentId,
                 Email = newStudent.StudentEmail,
                 Password = newStudent.StudentPassword,
-                Gpa = newStudent.StudentGpa,
-                Hours = newStudent.TotalHours,
+                Gpa = 0,
+                Hours = 0,
                 Photo = await _helper.SaveImage(newStudent.StudentPhoto),
                 BirthDate = newStudent.BirthDateOfStudent,
                 PhoneNumber = newStudent.PhoneNumber,
-                Semester = newStudent.Semester,
+                Semester = "Semester1",
                 DepartmentCode = newStudent.DepartmentCode,
             };
 

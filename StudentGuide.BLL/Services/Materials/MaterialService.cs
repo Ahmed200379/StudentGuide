@@ -18,11 +18,11 @@ namespace StudentGuide.BLL.Services.Materials
         }
 
         #region GetAllMaterial
-        public async Task<IEnumerable<MaterialReadDto>> GetAllMaterial()
+        public async Task<IEnumerable<DocumentReadDto>> GetAllMaterial()
         {
             IEnumerable<Material> AllMaterialFromDb = await _unitOfWork.MaterialRepo.GetAll();
-            IEnumerable<MaterialReadDto> AllMaterial = AllMaterialFromDb
-                .Select(p => new MaterialReadDto
+            IEnumerable<DocumentReadDto> AllMaterial = AllMaterialFromDb
+                .Select(p => new DocumentReadDto
                 {
                     Id = p.Id,
                     Name = p.Name,
@@ -34,11 +34,11 @@ namespace StudentGuide.BLL.Services.Materials
             return AllMaterial;
         }
 # region GetMaterialBYId
-        public async Task<MaterialReadDto?> GetMaterialById(int id)
+        public async Task<DocumentReadDto?> GetMaterialById(int id)
         {
             Material? MaterialFromDb = await _unitOfWork.MaterialRepo.GetByIdAsync(id);
             if(MaterialFromDb is null) { return null; }
-            MaterialReadDto material = new()
+            DocumentReadDto material = new()
             {
                 Id = MaterialFromDb.Id,
                 Name = MaterialFromDb.Name,
@@ -50,11 +50,11 @@ namespace StudentGuide.BLL.Services.Materials
             return material;
         }
         #endregion
-        public async Task<MaterialReadDto?> GetMaterialBYname(string Name)
+        public async Task<DocumentReadDto?> GetMaterialBYname(string Name)
         {
             Material MaterialFromDb = await _unitOfWork.MaterialRepo.GetMaterialByNameAsync(Name);
             if (MaterialFromDb is null) return null;
-            MaterialReadDto material = new()
+            DocumentReadDto material = new()
             {
                 DriveLink = MaterialFromDb.Drive,
                 Instructor = MaterialFromDb.InstructorName,
@@ -66,7 +66,7 @@ namespace StudentGuide.BLL.Services.Materials
         }
         #endregion
         #region AddMaterial
-        public async Task<bool> AddNewMaterial(MaterialAddDto NewMaterial)
+        public async Task<bool> AddNewMaterial(DocumentAddDto NewMaterial)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace StudentGuide.BLL.Services.Materials
             }
         }
 
-        public async Task<bool> EditMaterial(MaterialEditDto materialEditDto)
+        public async Task<bool> EditMaterial(DocumentEditDto materialEditDto)
         {
             Material? material = await _unitOfWork.MaterialRepo.GetByIdAsync(materialEditDto.Id);
             if(material == null)
@@ -126,10 +126,10 @@ namespace StudentGuide.BLL.Services.Materials
             }
         }
 
-        public async Task<MaterialReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage)
+        public async Task<DocumentReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage)
         {
             var materials = await _unitOfWork.MaterialRepo.GetAllMaterialsInPagnation(page, countPerPage);
-            var materialDto=materials.Select(p => new MaterialReadDto
+            var materialDto=materials.Select(p => new DocumentReadDto
             {
                 Id=p.Id,
                 Instructor=p.InstructorName,
@@ -139,7 +139,7 @@ namespace StudentGuide.BLL.Services.Materials
                 CourseCode =p.CourseCode
             }).ToList();
             int totalCount = await _unitOfWork.MaterialRepo.TotalCount();
-            return new MaterialReadPagnationDto
+            return new DocumentReadPagnationDto
             {
                 Materials = materialDto,
                 TotalCount = totalCount
@@ -148,7 +148,7 @@ namespace StudentGuide.BLL.Services.Materials
         public async Task<MaterialReadWithCountDto> GetAllMaterialWithCount()
         {
             var materials = await _unitOfWork.MaterialRepo.GetAllAsync();
-            var materialDto = materials.Select(p => new MaterialReadDto
+            var materialDto = materials.Select(p => new DocumentReadDto
             {
                 Id = p.Id,
                 Instructor = p.InstructorName,
@@ -165,10 +165,10 @@ namespace StudentGuide.BLL.Services.Materials
             };
         }
 
-        public async Task<List<MaterialReadDto>> Search(string? Keyword)
+        public async Task<List<DocumentReadDto>> Search(string? Keyword)
         {
             var materials = await _unitOfWork.MaterialRepo.GetAll();
-            var materialDto = materials.Select(p => new MaterialReadDto
+            var materialDto = materials.Select(p => new DocumentReadDto
             {
                 Id = p.Id,
                 Instructor = p.InstructorName,

@@ -6,7 +6,6 @@ using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Dtos.Course;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
-using StudentGuide.DAL.UnitOfWork;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -46,12 +45,12 @@ namespace StudentGuide.API.Helpers
             student.Name = editStudent.StudentName;
             student.Email = editStudent.StudentEmail;
             student.Password = editStudent.StudentPassword;
-            student.Gpa = editStudent.StudentGpa;
-            student.Hours = editStudent.TotalHours;
+            student.Gpa = 0;
+            student.Hours = 0;
             student.Photo = await SaveImage(editStudent.StudentPhoto);
             student.BirthDate = editStudent.BirthDateOfStudent;
             student.PhoneNumber = editStudent.PhoneNumber;
-            student.Semester = editStudent.Semester;
+            student.Semester = "Semester1";
             student.DepartmentCode = editStudent.DepartmentCode;
         }
         public int GoToNextSemester(int hours, int currentSemester)

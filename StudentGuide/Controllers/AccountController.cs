@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentGuide.BLL.Dtos.Account;
+using Microsoft.AspNetCore.Authorization;
 using StudentGuide.BLL.Services.AccountService;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

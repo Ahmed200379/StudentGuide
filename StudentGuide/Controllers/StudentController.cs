@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.BLL.Services.Students;
-
+using Microsoft.AspNetCore.Authorization;
 namespace StudentGuide.API.Controllers
 {
     [Route("api/[controller]")]
@@ -15,6 +15,7 @@ namespace StudentGuide.API.Controllers
         {
             _studentService = studentService;
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("DashBoard/AddNewStudent")]
         public async Task<IActionResult> AddNewStudent([FromBody]StudentAddDto studentAddDto)
@@ -33,9 +34,10 @@ namespace StudentGuide.API.Controllers
                 return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
             }
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpPost]
-        [Route("DashBoard/EnrollCourses")]
-        public async Task<IActionResult> AddNewStudent([FromBody]StudentErollDto courses)
+        [Route("EnrollCourses")]
+        public async Task<IActionResult> EnrollCourses([FromBody]StudentErollDto courses)
         {
             try
             {
@@ -51,6 +53,7 @@ namespace StudentGuide.API.Controllers
                 return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         [Route("DashBoard/UpdateStudent")]
         public async Task<IActionResult> UpdateStudent([FromBody]StudentEditDto studentEditDto)
@@ -68,6 +71,7 @@ namespace StudentGuide.API.Controllers
                 return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("DashBoard/GetAllStudents")]
         public async Task<IActionResult> GetAllStudents()
@@ -83,6 +87,7 @@ namespace StudentGuide.API.Controllers
             }
            
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("DashBoard/Search")]
         public async Task<IActionResult> Search([FromQuery]string keyword)
@@ -98,6 +103,7 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("DashBoard/GetAllStudentsInpagnation/{page}/{countPerPage}")]
         public async Task<IActionResult> GetAllStudentsInPagnation(int page, int countPerPage)
@@ -117,9 +123,10 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("DashBoard/GetByIdForAdmin/{code}")]
-        public async Task<IActionResult> GetByIdForAdmin(string code)
+        [Route("DashBoard/GetStudentByIdForAdmin/{code}")]
+        public async Task<IActionResult> GetStudentByIdForAdmin(string code)
         {
             try
             {
@@ -136,9 +143,10 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
-        [Route("DashBoard/GetByIdForStudent/{code}")]
-        public async Task<IActionResult> GetByIdForStudent(string code)
+        [Route("DashBoard/GetStudentByIdForStudent/{code}")]
+        public async Task<IActionResult> GetStudentByIdForStudent(string code)
         {
             try
             {
@@ -155,6 +163,7 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("DashBoard/DeleteStudent/{code}")]
         public async Task<IActionResult> DeleteById(string code)

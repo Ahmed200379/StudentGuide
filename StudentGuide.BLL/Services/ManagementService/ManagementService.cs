@@ -86,5 +86,20 @@ namespace StudentGuide.BLL.Services.ManagementService
                 Message = "successsfully send all messages"
             };
         }
+        public async Task<MessageResponseDto> SendDepartmentNotificationEmail(EmailRequestDto emailRequestDto)
+        {
+            var Students = await _unitOfWork.StudentRepo.GetAllAsync(s=>s.Semester=="Semester5");
+            var emailsOfStudents = Students.Select(s => s.Email).ToList();
+            foreach (var email in emailsOfStudents)
+            {
+                await _mailingService.SendEmailAsync(email, emailRequestDto.Subject, emailRequestDto.Body);
+            }
+            return new MessageResponseDto
+            {
+                Date = DateTime.Now,
+                IsSuccessed = true,
+                Message = "successsfully send all messages"
+            };
+        }
     }
 }

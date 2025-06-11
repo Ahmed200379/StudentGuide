@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.BLL.Services.HashId;
 using StudentGuide.BLL.Services.Materials;
+using Microsoft.AspNetCore.Authorization;
 namespace StudentGuide.API.Controllers
 {
     [Route("api/[controller]")]
@@ -17,14 +18,14 @@ namespace StudentGuide.API.Controllers
             _materialService = materialService;
             _hashIdService = hashIdService;
         }
-
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetAllMaterials")]
         public async Task<IActionResult> GetAllMaterials()
         {
             try
             {
-                IEnumerable<MaterialReadDto> AllMaterialFromDb = await _materialService.GetAllMaterial();
+                IEnumerable<DocumentReadDto> AllMaterialFromDb = await _materialService.GetAllMaterial();
                 if (AllMaterialFromDb is null)
                 {
                     return BadRequest();
@@ -37,13 +38,14 @@ namespace StudentGuide.API.Controllers
             }
             
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<MaterialReadDto>> GetMaterialById(int id)
+        public async Task<ActionResult<DocumentReadDto>> GetMaterialById(int id)
         {
             try
             {
-                MaterialReadDto? material = await _materialService.GetMaterialById(id);
+                DocumentReadDto? material = await _materialService.GetMaterialById(id);
                 if (material == null)
                 {
                     return NotFound();
@@ -56,13 +58,14 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetMaterialByName/{Name}")]
-        public async Task<ActionResult<MaterialReadDto>> GetMaterialByName(String Name)
+        public async Task<ActionResult<DocumentReadDto>> GetMaterialByName(String Name)
         {
             try
             {
-                MaterialReadDto? material = await _materialService.GetMaterialBYname(Name);
+                DocumentReadDto? material = await _materialService.GetMaterialBYname(Name);
                 if (material == null )
                 {
                     return NotFound();
@@ -75,6 +78,7 @@ namespace StudentGuide.API.Controllers
             }
             
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetAllMaterialsInPagnation/{page}/{countPerPage}")]
         public async Task<IActionResult> GetAllMaterialsInPagnation(int page, int countPerPage)
@@ -94,6 +98,7 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetAllMaterialsWithCount")]
         public async Task<IActionResult> GetAllMaterialsWithCount()
@@ -113,9 +118,10 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("Dashboard/AddNewMaterial")]
-        public async Task<IActionResult> AddNewMaterial(MaterialAddDto NewMaterial)
+        public async Task<IActionResult> AddNewMaterial(DocumentAddDto NewMaterial)
         {
             if (!string.IsNullOrWhiteSpace(NewMaterial.Instructor) && !string.IsNullOrWhiteSpace(NewMaterial.Name))
             {
@@ -136,6 +142,7 @@ namespace StudentGuide.API.Controllers
            
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("Dashboard/DeleteMaterial/{id}")]
         public async Task<IActionResult> DeleteMaterial(int id)
@@ -151,9 +158,10 @@ namespace StudentGuide.API.Controllers
             }
            
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         [Route("Dashboard/UpdateMaterial")]
-        public async Task<IActionResult> UpdateMaterial([FromBody]MaterialEditDto materialEditDto)
+        public async Task<IActionResult> UpdateMaterial([FromBody]DocumentEditDto materialEditDto)
         {
             if (!string.IsNullOrWhiteSpace(materialEditDto.Instructor) && !string.IsNullOrWhiteSpace(materialEditDto.Name))
             {
@@ -175,6 +183,7 @@ namespace StudentGuide.API.Controllers
                 return BadRequest("eaither instructor or name can not be null");
             }
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search([FromQuery]String? keyword)

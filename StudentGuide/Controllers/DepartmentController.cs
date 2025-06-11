@@ -3,7 +3,7 @@ using StudentGuide.BLL.Dtos.Department;
 using StudentGuide.BLL.Dtos.Material;
 using StudentGuide.BLL.Services.Departments;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authorization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace StudentGuide.API.Controllers
@@ -17,6 +17,7 @@ namespace StudentGuide.API.Controllers
         {
             _departmentService = departmentService;
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetAllDepartments")]
         public async Task<IActionResult> GetAllDepartments()
@@ -36,9 +37,10 @@ namespace StudentGuide.API.Controllers
             }
 
         }
+        [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetDepartmentById/{id}")]
-        public async Task<ActionResult<MaterialReadDto>> GetDepartmentById(String id)
+        public async Task<ActionResult<DocumentReadDto>> GetDepartmentById(String id)
         {
             try
             {
@@ -55,7 +57,7 @@ namespace StudentGuide.API.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("DashBoard/AddDepartment")]
         public async Task<IActionResult> AddDepartment([FromBody]DepartmentAddDto newDepartment)
         {
@@ -77,7 +79,7 @@ namespace StudentGuide.API.Controllers
             }
         }
 
-        // PUT api/<DepartmentController>/5
+        [Authorize(Roles = "Student,Admin")]
         [HttpPut]
         [Route("DashBoard/UpdateDepartment")]
         public async Task<IActionResult> UpdateDepartment([FromBody] DepartmentEditDto departmentEditDto)
@@ -102,7 +104,7 @@ namespace StudentGuide.API.Controllers
             }
           
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("Dashboard/DeleteDepartment/{id}")]
         public async Task<IActionResult> DeleteDepartment(string id)

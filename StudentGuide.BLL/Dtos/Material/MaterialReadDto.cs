@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.BLL.Dtos.Material
 {
-   public class MaterialReadDto
+   public class DocumentReadDto
     {
         public int Id { get; set; }
         public String Name { get; set; } = string.Empty;

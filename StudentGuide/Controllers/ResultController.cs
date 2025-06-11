@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StudentGuide.BLL.Dtos.Result;
 using StudentGuide.BLL.Services.Results;
-
+using Microsoft.AspNetCore.Authorization;
 namespace StudentGuide.API.Controllers
 {
     [Route("api/[controller]")]
@@ -14,6 +14,7 @@ namespace StudentGuide.API.Controllers
         {
             _resultsService = resultsService;
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddResult")]
         public async Task<IActionResult> AddResult([FromBody] IEnumerable<ResultAddDto> results)
         {
@@ -27,6 +28,7 @@ namespace StudentGuide.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAllResultForAdmin")]
         public async Task<IActionResult> GetAllResultForAdmin([FromQuery] string code, [FromQuery] string semester)
         {
@@ -40,6 +42,7 @@ namespace StudentGuide.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAllResultsForAllStudents")]
         public async Task<IActionResult> GetAllResultsForAllStudents( [FromQuery]string semester)
         {
@@ -53,6 +56,7 @@ namespace StudentGuide.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddResultWithExcel")]
         public async Task<IActionResult> AddResultWithExcel(IFormFile file)
         {

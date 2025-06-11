@@ -11,10 +11,8 @@ namespace StudentGuide.DAL.Data.Context
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Student> Stduents { get; set; }
         public DbSet<Document> Documents { get; set; }
-        //payment
-        //jwt
-        //ci/cd
-        //docker
+         //add Auth Authrize
+         //add logout
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -9,7 +9,7 @@ namespace StudentGuide.DAL.Data.Models
     }
     public enum Role
     {
-        Admin,
         Student,
+        Admin,
     }
 }

@@ -17,7 +17,7 @@ namespace StudentGuide.BLL.Dtos.Account
         public string ConfirmPassword { get; set; } = string.Empty;
         public IFormFile? StudentPhoto { get; set; } = default!;
         public DateTime BirthDateOfStudent { get; set; }
-        [MaxLength(11)]
+        [MaxLength(11),MinLength(11)]
         public string PhoneNumber { get; set; } = string.Empty;
     }
 }

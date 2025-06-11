@@ -58,8 +58,7 @@ namespace StudentGuide.BLL.Services.Results
             }
         }
 
-
-         public async Task<IEnumerable<ResultReadForStudentDto>> GetAllResultsForStudents(String code,string semester)
+         public async Task<IEnumerable<ResultReadForStudentDto>> GetAllResultForSpecificStudent(String code,string semester)
          {
             var results = await _unitOfWork.ResultRepo.GetAllAsync(r=>r.Semester==semester && r.StudentId==code);
             if (results.Any(r=>r.Grade==-1))

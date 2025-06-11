@@ -11,6 +11,7 @@ namespace StudentGuide.BLL.Services.Results
     {
         public Task AddResult(IEnumerable<ResultAddDto> results);
         public Task<IEnumerable<ResultReadForAdminDto>> GetAllResultForAdmin(String code, string semester);
+        public Task<IEnumerable<ResultReadForStudentDto>> GetAllResultForSpecificStudent(String code, string semester);
         public Task<IEnumerable<ResultsReadForAllStudents>> GetAllResultsForAllStudents(string semester);
         public Task AddResultWithExcel(Stream results);
 

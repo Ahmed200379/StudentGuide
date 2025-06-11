@@ -42,6 +42,20 @@ namespace StudentGuide.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Student,Admin")]
+        [HttpGet("GetAllResultForSpecificStudent")]
+        public async Task<IActionResult> GetAllResultForSpecificStudent([FromQuery] string code, [FromQuery] string semester)
+        {
+            try
+            {
+                var result = await _resultsService.GetAllResultForSpecificStudent(code, semester);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [Authorize(Roles = "Admin")]
         [HttpGet("GetAllResultsForAllStudents")]
         public async Task<IActionResult> GetAllResultsForAllStudents( [FromQuery]string semester)

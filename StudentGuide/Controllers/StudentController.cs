@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.BLL.Services.Students;
 using Microsoft.AspNetCore.Authorization;
+using StudentGuide.BLL.Services.Results;
+using StudentGuide.BLL.Dtos.Result;
 namespace StudentGuide.API.Controllers
 {
     [Route("api/[controller]")]
@@ -11,9 +13,12 @@ namespace StudentGuide.API.Controllers
     public class StudentController : Controller
     {
        private readonly IStudentService _studentService;
-       public StudentController(IStudentService studentService)
+        private readonly IResultsService _resultsService;
+
+        public StudentController(IStudentService studentService,IResultsService resultsService)
         {
             _studentService = studentService;
+            _resultsService = resultsService;
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
@@ -176,6 +181,25 @@ namespace StudentGuide.API.Controllers
                 }
                 await _studentService.Delete(code);
                 return Ok("Successfully deleted the Student");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+        [Authorize(Roles = "Admin,Student")]
+        [HttpDelete]
+        [Route("DeleteEnrolledCourse")]
+        public async Task<IActionResult> DeleteEnrolledCourse(ResultDeleteDto resultDeleteDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+               var response= await _resultsService.DeleteCourse(resultDeleteDto);
+                return Ok(response.Message);
             }
             catch (Exception ex)
             {

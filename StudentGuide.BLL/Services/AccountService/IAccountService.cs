@@ -11,7 +11,7 @@ namespace StudentGuide.BLL.Services.AccountService
     {
         public Task<ResonseDto> Register(RegisterDto registerDto);
         public Task<ResonseDto> Login(LoginDto loginDto);
-        public Task<MessageResponseDto> ForgetPassword(string email);
+        public Task<MessageResponseDto> ForgetPassword(EmailReadDto emailReadDto);
         public Task<MessageResponseDto> ValidateCode(CheckCodeDto code);
         public Task<MessageResponseDto> ResetPassword(ResetPasswordDto newPass);
     }

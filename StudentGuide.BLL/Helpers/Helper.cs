@@ -61,10 +61,9 @@ namespace StudentGuide.API.Helpers
             }
             else
             {
-                return currentSemester;
+                return --currentSemester;
             }
         }
-
         public double CalculatePointForCourse(int grade)
         {
             if (grade >= 90) return 4.0;

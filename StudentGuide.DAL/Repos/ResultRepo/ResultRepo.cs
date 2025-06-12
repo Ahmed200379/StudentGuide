@@ -9,6 +9,13 @@ namespace StudentGuide.DAL.Repos.ResultRepo
     {
         private readonly ApplicationDbContext _context;
         public ResultRepo(ApplicationDbContext context):base(context) { _context = context; }
+
+        public StudentCourse GetById(string studentId, string courseCode)
+        {
+            return _context.Set<StudentCourse>()
+                .FirstOrDefault(sc => sc.StudentId == studentId && sc.CourseCode == courseCode)!;
+        }
+
         public void UpdateRangeAsync(List<StudentCourse> results)
         {
              _context.Set<StudentCourse>().UpdateRange(results);

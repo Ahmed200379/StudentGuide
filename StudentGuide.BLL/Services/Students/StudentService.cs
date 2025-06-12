@@ -158,6 +158,13 @@ namespace StudentGuide.BLL.Services.Students
 
         public async Task EnrollCourses(StudentErollDto studentErollDto)
         {
+            var enrolledCourses = await _unitOfWork.ResultRepo.GetAllAsync(c => c.StudentId==studentErollDto.StudentId);
+            var enrolledCourseSCodes =  enrolledCourses.Select(c => c.CourseCode);
+            var isInvalid = studentErollDto.Codes.Any(c => enrolledCourseSCodes.Contains(c));
+            if(isInvalid)
+            {
+                throw new Exception("You already enrolled these courses");
+            }
             var student = await _unitOfWork.StudentRepo.GetByIdAsync(studentErollDto.StudentId);
             if(student==null)
             {

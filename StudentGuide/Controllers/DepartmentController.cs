@@ -40,7 +40,7 @@ namespace StudentGuide.API.Controllers
         [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetDepartmentById/{id}")]
-        public async Task<ActionResult<DocumentReadDto>> GetDepartmentById(String id)
+        public async Task<ActionResult<DepartmentReadDto>> GetDepartmentById(String id)
         {
             try
             {

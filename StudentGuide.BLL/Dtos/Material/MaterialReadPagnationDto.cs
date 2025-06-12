@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace StudentGuide.BLL.Dtos.Material
 {
-   public class DocumentReadPagnationDto
+   public class MaterialReadPagnationDto
     {
-        public IEnumerable<DocumentReadDto> Materials { get; set; } = new List<DocumentReadDto>();
+        public IEnumerable<MaterialReadDto> Materials { get; set; } = new List<MaterialReadDto>();
         public int TotalCount { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace StudentGuide.DAL.Repos.ResultRepo
    public interface IResultRepo:IBaseRepo<StudentCourse>
     {
         public void UpdateRangeAsync(List<StudentCourse> results);
+        public StudentCourse GetById(string studentId, string courseCode);
     }
 }

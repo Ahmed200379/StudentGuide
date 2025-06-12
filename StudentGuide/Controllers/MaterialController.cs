@@ -25,7 +25,7 @@ namespace StudentGuide.API.Controllers
         {
             try
             {
-                IEnumerable<DocumentReadDto> AllMaterialFromDb = await _materialService.GetAllMaterial();
+                IEnumerable<MaterialReadDto> AllMaterialFromDb = await _materialService.GetAllMaterial();
                 if (AllMaterialFromDb is null)
                 {
                     return BadRequest();
@@ -41,11 +41,11 @@ namespace StudentGuide.API.Controllers
         [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<DocumentReadDto>> GetMaterialById(int id)
+        public async Task<ActionResult<MaterialReadDto>> GetMaterialById(int id)
         {
             try
             {
-                DocumentReadDto? material = await _materialService.GetMaterialById(id);
+                MaterialReadDto? material = await _materialService.GetMaterialById(id);
                 if (material == null)
                 {
                     return NotFound();
@@ -61,11 +61,11 @@ namespace StudentGuide.API.Controllers
         [Authorize(Roles = "Student,Admin")]
         [HttpGet]
         [Route("GetMaterialByName/{Name}")]
-        public async Task<ActionResult<DocumentReadDto>> GetMaterialByName(String Name)
+        public async Task<ActionResult<MaterialReadDto>> GetMaterialByName(String Name)
         {
             try
             {
-                DocumentReadDto? material = await _materialService.GetMaterialBYname(Name);
+                MaterialReadDto? material = await _materialService.GetMaterialBYname(Name);
                 if (material == null )
                 {
                     return NotFound();
@@ -121,7 +121,7 @@ namespace StudentGuide.API.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("Dashboard/AddNewMaterial")]
-        public async Task<IActionResult> AddNewMaterial(DocumentAddDto NewMaterial)
+        public async Task<IActionResult> AddNewMaterial(MaterialAddDto NewMaterial)
         {
             if (!string.IsNullOrWhiteSpace(NewMaterial.Instructor) && !string.IsNullOrWhiteSpace(NewMaterial.Name))
             {
@@ -161,7 +161,7 @@ namespace StudentGuide.API.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPut]
         [Route("Dashboard/UpdateMaterial")]
-        public async Task<IActionResult> UpdateMaterial([FromBody]DocumentEditDto materialEditDto)
+        public async Task<IActionResult> UpdateMaterial([FromBody]MaterialEditDto materialEditDto)
         {
             if (!string.IsNullOrWhiteSpace(materialEditDto.Instructor) && !string.IsNullOrWhiteSpace(materialEditDto.Name))
             {

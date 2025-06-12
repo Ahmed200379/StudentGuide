@@ -9,14 +9,14 @@ namespace StudentGuide.BLL.Services.Materials
 {
    public interface IMaterialService
     {
-        public Task<IEnumerable<DocumentReadDto>> GetAllMaterial();
+        public Task<IEnumerable<MaterialReadDto>> GetAllMaterial();
         public Task<MaterialReadWithCountDto> GetAllMaterialWithCount();
-        public Task<bool> AddNewMaterial(DocumentAddDto newmaterial);
-        public Task<bool> EditMaterial(DocumentEditDto material);
-        public Task<DocumentReadDto?> GetMaterialById(int id);
-        public Task<DocumentReadDto?> GetMaterialBYname(String Name);
+        public Task<bool> AddNewMaterial(MaterialAddDto newmaterial);
+        public Task<bool> EditMaterial(MaterialEditDto material);
+        public Task<MaterialReadDto?> GetMaterialById(int id);
+        public Task<MaterialReadDto?> GetMaterialBYname(String Name);
         public Task<bool> DeleteMaterial(int id);
-        public Task<DocumentReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage);
-        public Task<List<DocumentReadDto>> Search(String Keyword);
+        public Task<MaterialReadPagnationDto> GetAllMaterialInPagnation(int page, int countPerPage);
+        public Task<List<MaterialReadDto>> Search(String Keyword);
     }
 }

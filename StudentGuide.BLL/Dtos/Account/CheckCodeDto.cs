@@ -12,7 +12,7 @@ namespace StudentGuide.BLL.Dtos.Account
         [Required]
         public string Email { get; set; } = string.Empty;
         [Required]
-        [MinLength(8)]
+        [MinLength(6)]
         public string Code { get; set; } = string.Empty;
     }
 }

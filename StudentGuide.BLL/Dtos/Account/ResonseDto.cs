@@ -14,6 +14,7 @@ namespace StudentGuide.BLL.Dtos.Account
         public string Message { get; set; }
         public bool IsAuthenticated { get; set; }
         public DateTime ExpiresIn { get; set; }
+        public string Name { get; set; }
         public Role Role { get; set; } 
         public string Token { get; set; }
     }

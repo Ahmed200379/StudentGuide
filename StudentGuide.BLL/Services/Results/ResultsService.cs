@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml;
 using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Constant;
+using StudentGuide.BLL.Dtos.Account;
 using StudentGuide.BLL.Dtos.Result;
 using StudentGuide.DAL.Data.Models;
 using StudentGuide.DAL.UnitOfWork;
@@ -183,6 +184,38 @@ namespace StudentGuide.BLL.Services.Results
                 }
             }
 
+        }
+
+        public async Task<MessageResponseDto> DeleteCourse(ResultDeleteDto reseltDeleteDto)
+        {
+            var Course = _unitOfWork.ResultRepo.GetById(reseltDeleteDto.studentId, reseltDeleteDto.courseCode);
+            if (Course == null)
+            {
+                return new MessageResponseDto
+                {
+                    Message = "Course not found",
+                };
+            }
+            if (Course.IsPassed ==true)
+            {
+               return new MessageResponseDto
+               {
+                   Message = "You can't delete a course that has a grade",
+               };
+            }
+            await _unitOfWork.ResultRepo.Delete(Course);
+            int isDeleted = await _unitOfWork.Complete();
+            if (isDeleted == 0)
+            {
+                return new MessageResponseDto
+                {
+                    Message = "Failed to delete course",
+                };
+            }
+            return new MessageResponseDto
+            {
+                Message = "Course deleted successfully",
+            };
         }
     }
 }

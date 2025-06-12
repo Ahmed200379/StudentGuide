@@ -30,9 +30,9 @@ namespace StudentGuide.BLL.Services.AccountService
         }
 
 
-        public async Task<MessageResponseDto> ForgetPassword(string email)
+        public async Task<MessageResponseDto> ForgetPassword(EmailReadDto emailReadDto)
         {
-            var user=await _userManager.FindByEmailAsync(email);
+            var user=await _userManager.FindByEmailAsync(emailReadDto.Email);
             if (user == null)
             {
                 return new MessageResponseDto
@@ -44,7 +44,7 @@ namespace StudentGuide.BLL.Services.AccountService
             var code = new Random().Next(100000, 999999).ToString();
             
             var resetToken =await _userManager.GeneratePasswordResetTokenAsync(user);
-            _memoryCache.Set($"Reset_{email}", new { Token = resetToken, Code = code }, TimeSpan.FromMinutes(15));
+            _memoryCache.Set($"Reset_{emailReadDto.Email}", new { Token = resetToken, Code = code }, TimeSpan.FromMinutes(15));
             await _mailingService.SendEmailAsync(user.Email, "Password Reset Code",
                                               $"Your password reset code is: {code}");
             return new MessageResponseDto
@@ -64,11 +64,13 @@ namespace StudentGuide.BLL.Services.AccountService
                 resonseDto.Message = "Email or password is incorrect";
                 return resonseDto;
             }
-           var token= await _helper.CreateToken(user);
+            var nameOFStudent = await _unitOfWork.StudentRepo.GetByIdAsync(user.Id);
+            var token= await _helper.CreateToken(user);
             resonseDto.Token = new JwtSecurityTokenHandler().WriteToken(token);
             resonseDto.Message = "You Successfully Login";
             resonseDto.ExpiresIn = token.ValidTo;
             resonseDto.StudentId = user.Id;
+            resonseDto.Name= nameOFStudent?.Name ?? "Admin";
             resonseDto.IsAuthenticated = true;
             resonseDto.Role = Enum.TryParse<Role>(await _userManager.GetRolesAsync(user).ContinueWith(r => r.Result.FirstOrDefault()), out var role) ? role : Role.Student;
             return resonseDto;
@@ -140,6 +142,7 @@ namespace StudentGuide.BLL.Services.AccountService
                     Role = Role.Student,
                     Message = "Registeration Successed",
                     IsAuthenticated = true,
+                    Name = newStudent.Name,
                     ExpiresIn = jwtToken.ValidTo,
                     StudentId = registerDto.StudentId,
                     Token = new JwtSecurityTokenHandler().WriteToken(jwtToken)

@@ -8,7 +8,7 @@ namespace StudentGuide.BLL.Dtos.Material
 {
     public class MaterialReadWithCountDto
     {
-        public IEnumerable<DocumentReadDto> Materials { get; set; } = new List<DocumentReadDto>();
+        public IEnumerable<MaterialReadDto> Materials { get; set; } = new List<MaterialReadDto>();
         public int TotalCount { get; set; }
     }
 }

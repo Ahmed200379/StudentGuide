@@ -63,13 +63,13 @@ namespace StudentGuide.API.Controllers
         }
 
         [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> ForgetPaaword([FromBody]string email)
+        public async Task<IActionResult> ForgetPaaword([FromBody] EmailReadDto emailReadDto)
         {
-            if(email == null)
+            if(emailReadDto.Email == null)
             {
                 return BadRequest("You should enter a message");
             }
-            var response= await _accountService.ForgetPassword(email);
+            var response= await _accountService.ForgetPassword(emailReadDto);
             return Ok(response);
         }
         [HttpPost("ResetPassword")]

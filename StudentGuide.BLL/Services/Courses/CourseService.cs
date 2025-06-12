@@ -256,7 +256,7 @@ namespace StudentGuide.BLL.Services.Courses
             var availableCoursesFiltered = courses
                 .Where(c => !c.Students.Any(s => s.StudentId == code && s.IsPassed)
                     && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p)))
-                    && c.CourseDepartments.Any(d => d.DepartmentsCode == departmentCodeForStudent || d.DepartmentsCode=="General")
+                    && c.CourseDepartments.Any(d => d.DepartmentsCode == departmentCodeForStudent || d.DepartmentsCode=="GN")
                     )
                 .Select(c => _helper.MapToCourseReadDto(c))
                 .ToList();

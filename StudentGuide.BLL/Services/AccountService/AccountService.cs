@@ -70,6 +70,7 @@ namespace StudentGuide.BLL.Services.AccountService
             resonseDto.ExpiresIn = token.ValidTo;
             resonseDto.StudentId = user.Id;
             resonseDto.IsAuthenticated = true;
+            resonseDto.Role = Enum.TryParse<Role>(await _userManager.GetRolesAsync(user).ContinueWith(r => r.Result.FirstOrDefault()), out var role) ? role : Role.Student;
             return resonseDto;
         }
 

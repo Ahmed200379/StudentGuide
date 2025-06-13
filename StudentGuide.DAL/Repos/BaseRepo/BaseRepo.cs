@@ -23,6 +23,24 @@ namespace StudentGuide.DAL.Repos.BaseRepo
         {
             await _context.Set<T>().AddAsync(entity);
         }
+        public async Task<IEnumerable<T>> GetAllexpressionAsync(
+    Expression<Func<T, bool>> filter = null,
+    string includeProperties = "")
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            foreach (var includeProperty in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty.Trim());
+            }
+
+            return await query.ToListAsync();
+        }
 
         public async Task Delete(T entity)
         {

@@ -30,11 +30,11 @@ namespace StudentGuide.API.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("GetAllResultForAdmin")]
-        public async Task<IActionResult> GetAllResultForAdmin([FromQuery] string code, [FromQuery] string semester)
+        public async Task<IActionResult> GetAllResultForAdmin(ResultReadForResult specificUser)
         {
             try
             {
-                var result = await _resultsService.GetAllResultForAdmin(code, semester);
+                var result = await _resultsService.GetAllResultForAdmin(specificUser);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -43,12 +43,12 @@ namespace StudentGuide.API.Controllers
             }
         }
         [Authorize(Roles = "Student,Admin")]
-        [HttpGet("GetAllResultForSpecificStudent")]
-        public async Task<IActionResult> GetAllResultForSpecificStudent([FromQuery] string code, [FromQuery] string semester)
+        [HttpPost("GetAllResultForSpecificStudent")]
+        public async Task<IActionResult> GetAllResultForSpecificStudent(ResultReadForResult specificStudent)
         {
             try
             {
-                var result = await _resultsService.GetAllResultForSpecificStudent(code, semester);
+                var result = await _resultsService.GetAllResultForSpecificStudent(specificStudent);
                 return Ok(result);
             }
             catch (Exception ex)

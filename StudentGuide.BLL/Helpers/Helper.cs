@@ -6,6 +6,7 @@ using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Dtos.Course;
 using StudentGuide.BLL.Dtos.Student;
 using StudentGuide.DAL.Data.Models;
+using StudentGuide.DAL.UnitOfWork;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,10 +17,12 @@ namespace StudentGuide.API.Helpers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        public Helper(UserManager<ApplicationUser> userManager,IConfiguration configuration)
+        private readonly IUnitOfWork _unitOfWork;
+        public Helper(UserManager<ApplicationUser> userManager,IConfiguration configuration,IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _unitOfWork = unitOfWork;   
         }
 
         public bool HasDuplicates(List<string> items)
@@ -76,7 +79,7 @@ namespace StudentGuide.API.Helpers
             else if (grade >= 50) return 2.0;
             else return 0.0;
         }
-        public double CalculateGPA(IEnumerable<StudentCourse> passedCourses)
+        public async Task<double> CalculateGPA(IEnumerable<StudentCourse> passedCourses)
         {
             double totalPoints = 0;
             double totalHours = 0;
@@ -84,8 +87,8 @@ namespace StudentGuide.API.Helpers
             foreach (var course in passedCourses)
             {
                 double points = CalculatePointForCourse(course.Grade);
-                totalPoints += points * course.Course.Hours;
-                totalHours += course.Course.Hours;
+                totalPoints += points * await _unitOfWork.ResultRepo.GetHoursOfCourse(course.CourseCode);
+                totalHours += await _unitOfWork.ResultRepo.GetHoursOfCourse(course.CourseCode);
             }
 
             if (totalHours == 0) return 0;

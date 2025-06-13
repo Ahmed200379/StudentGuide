@@ -20,6 +20,10 @@ namespace StudentGuide.DAL.Repos.BaseRepo
         Task Update(T entity);
         Task Delete(T entity);
         Task<int> TotalCount();
+        Task<IEnumerable<T>> GetAllexpressionAsync(
+    Expression<Func<T, bool>> filter = null,
+    string includeProperties = "");
+
 
     }
 }

@@ -13,7 +13,7 @@ namespace StudentGuide.API.Helpers
         public bool HasDuplicates(List<string> items);
         public int GoToNextSemester(int hours, int currentSemester);
         public double CalculatePointForCourse(int grade);
-        public double CalculateGPA(IEnumerable<StudentCourse> passedCourses);
+        public Task<double> CalculateGPA(IEnumerable<StudentCourse> passedCourses);
         public String GetGradeWithSymbol(int grade);
         public Task<String> SaveImage(IFormFile file);
         public Task<JwtSecurityToken> CreateToken(ApplicationUser user);

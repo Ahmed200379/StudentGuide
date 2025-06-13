@@ -1,4 +1,6 @@
-﻿using OfficeOpenXml;
+﻿using ClosedXML.Excel;
+using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using StudentGuide.API.Helpers;
 using StudentGuide.BLL.Constant;
 using StudentGuide.BLL.Dtos.Account;
@@ -20,6 +22,8 @@ namespace StudentGuide.BLL.Services.Results
         {
             if (results == null || !results.Any())
                 throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
+            var result =await _unitOfWork.ResultRepo.GetAllAsync(r=>r.CourseCode==results.First().CourseId);
+            var isAddedSecondTime = result.First().IsPassed;
             var student = await _unitOfWork.StudentRepo.GetByIdAsync(results.First().StudentId);
             if (student == null)
                 throw new Exception(Exceptions.ExceptionMessages.GetNotFoundMessage("Student"));
@@ -29,7 +33,8 @@ namespace StudentGuide.BLL.Services.Results
                     CourseCode=r.CourseId,
                     StudentId=r.StudentId,
                     Grade=r.GradeOfFinal+r.GradeWithoutFinal,
-                    IsPassed=(r.GradeOfFinal>=15 && (r.GradeOfFinal+r.GradeWithoutFinal)>=50)
+                    IsPassed=(r.GradeOfFinal>=15 && (r.GradeOfFinal+r.GradeWithoutFinal)>=50),
+                    Semester=student.Semester,
                 }).ToList();
              _unitOfWork.ResultRepo.UpdateRangeAsync(resultsOfStudent);
             int isAdded = await _unitOfWork.Complete();
@@ -37,31 +42,45 @@ namespace StudentGuide.BLL.Services.Results
             {
                 throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
             }
-            var Hours = resultsOfStudent.Where(c => c.IsPassed).Select(c=>c.Course.Hours).Sum();
+            var Hours = student.Hours;
             int currentSemester = ConstantData.SemestersByName[student.Semester];
-            if (currentSemester%2==0)
+            if(await _unitOfWork.ResultRepo.GetAllAsync(c=>c.Grade== -1 && c.StudentId == student.Code) is null)
             {
-               currentSemester= _helper.GoToNextSemester(Hours, currentSemester);
+                if (currentSemester % 2 == 0)
+                {
+                    currentSemester = _helper.GoToNextSemester(Hours, currentSemester);
+                }
+                else
+                {
+                    currentSemester++;
+                }
             }
-            else
+            var isPassed = (results.First().GradeOfFinal >= 15 && (results.First().GradeOfFinal + results.First().GradeWithoutFinal) >= 50);
+            if (isPassed)
             {
-                currentSemester++;
+                var codeOfPassedCourse = results.FirstOrDefault()!.CourseId;
+                var HoursOfPassedCourse = await _unitOfWork.ResultRepo.GetHoursOfCourse(codeOfPassedCourse);
+                var allPassedCourses = await _unitOfWork.ResultRepo.GetAllAsync(c => c.StudentId == student.Code && c.IsPassed);
+                var gpa = await  _helper.CalculateGPA(allPassedCourses);
+                student.Semester = ConstantData.SemestersByNumber[currentSemester];
+                student.Gpa = gpa;
+                if(isAddedSecondTime!)                {
+                    student.Hours += HoursOfPassedCourse;
+                }
+                await _unitOfWork.StudentRepo.Update(student);
+                int isUpdated = await _unitOfWork.Complete();
+                if (isAdded == 0)
+                {
+                    throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
+                }
             }
-            var allPassedCourses=await _unitOfWork.ResultRepo.GetAllAsync(c=>c.StudentId==student.Code && c.IsPassed);
-            var gpa = _helper.CalculateGPA(allPassedCourses);
-            student.Semester = ConstantData.SemestersByNumber[currentSemester];
-            student.Gpa = gpa;
-            await _unitOfWork.StudentRepo.Update(student);
-            int isUpdated = await _unitOfWork.Complete();
-            if (isAdded == 0)
-            {
-                throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
-            }
+           
         }
-
-         public async Task<IEnumerable<ResultReadForStudentDto>> GetAllResultForSpecificStudent(String code,string semester)
+         public async Task<IEnumerable<ResultReadForStudentDto>> GetAllResultForSpecificStudent(ResultReadForResult specificUser)
          {
-            var results = await _unitOfWork.ResultRepo.GetAllAsync(r=>r.Semester==semester && r.StudentId==code);
+            var results = await _unitOfWork.ResultRepo.GetAllWithIncludeAsync(
+                   r => r.Semester == specificUser.Semester && r.StudentId == specificUser.StudentId);
+            
             if (results.Any(r=>r.Grade==-1))
             {
                 var resultsDto = results.Select(r => new ResultReadForStudentDto
@@ -69,6 +88,7 @@ namespace StudentGuide.BLL.Services.Results
                     StudentId = r.StudentId,
                     CourseName = r.Course.Name,
                     StudentName = r.Student.Name,
+
                 }).ToList();
                 return resultsDto;
             }
@@ -84,10 +104,11 @@ namespace StudentGuide.BLL.Services.Results
                 return resultsDto;
             }      
          }
-        public async Task<IEnumerable<ResultReadForAdminDto>> GetAllResultForAdmin(String code, string semester)
+        public async Task<IEnumerable<ResultReadForAdminDto>> GetAllResultForAdmin(ResultReadForResult specificUser)
         {
-            var results = await _unitOfWork.ResultRepo.GetAllAsync(r => r.Semester == semester && r.StudentId == code);
-            if(!results.Any() || results==null)
+            var results = await _unitOfWork.ResultRepo.GetAllWithIncludeAsync(
+                   r => r.Semester == specificUser.Semester && r.StudentId == specificUser.StudentId);
+            if (!results.Any() || results==null)
             {
                 throw new Exception(Exceptions.ExceptionMessages.GetNotFoundMessage("Result"));
             }
@@ -105,7 +126,7 @@ namespace StudentGuide.BLL.Services.Results
 
         public async Task<IEnumerable<ResultsReadForAllStudents>> GetAllResultsForAllStudents(string semester)
         {
-            var allResults = await _unitOfWork.ResultRepo.GetAllAsync(r => r.Semester == semester);
+            var allResults = await _unitOfWork.ResultRepo.GetAllWithIncludeAsync(r=>r.Semester==semester);
             if(!allResults.Any() || allResults==null)
             {
                 throw new Exception(Exceptions.ExceptionMessages.GetNotFoundMessage("Results"));
@@ -126,66 +147,96 @@ namespace StudentGuide.BLL.Services.Results
                 }).ToList();
             return allResultsDto;
         }
+
         [Obsolete]
         public async Task AddResultWithExcel(Stream results)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (var package= new ExcelPackage(results))
-            {
-                var workSheet = package.Workbook.Worksheets[0];
-                int rowCount= workSheet.Dimension.Rows;
-                var resultsList = new List<StudentCourse>();
-                for (int i=2; i<= rowCount; i++)
-                {
-                    var studentId = workSheet.Cells[i, 1]?.Value?.ToString()?.Trim();
-                    var courseId = workSheet.Cells[i, 2]?.Value?.ToString()?.Trim();
-                    var gradeOfFinal = int.TryParse(workSheet.Cells[i, 3]?.Value?.ToString(), out var final) ? final : 0;
-                    var gradeWithoutFinal = int.TryParse(workSheet.Cells[i, 4]?.Value?.ToString(), out var nonFinal) ? nonFinal : 0;
-                    var semester = workSheet.Cells[i, 5]?.Value?.ToString()?.Trim();
+            var workbook = new XSSFWorkbook(results);
+            var sheet = workbook.GetSheetAt(0);
+            int rowCount = sheet.LastRowNum;
 
-                    if (string.IsNullOrEmpty(studentId) || string.IsNullOrEmpty(courseId))
-                        continue;
-                    var result = new StudentCourse()
-                    {
-                        StudentId = studentId,
-                        CourseCode= courseId,
-                        Grade=gradeOfFinal+gradeWithoutFinal,
-                        Semester=semester,
-                        IsPassed=(gradeOfFinal>=15 && (gradeOfFinal+gradeWithoutFinal>=50))
-                        
-                    };
-                  await _unitOfWork.ResultRepo.Update(result);
-                    int isAdded = await _unitOfWork.Complete();
-                    if (isAdded == 0)
-                    {
-                        throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
-                    }
-                    var student = await _unitOfWork.StudentRepo.GetByIdAsync(studentId);
-                    var PassedCourses = await _unitOfWork.ResultRepo.GetAllAsync(r => r.IsPassed && r.StudentId == studentId);
-                    var Hours = PassedCourses.Select(c => c.Course.Hours).Sum();
-                    int currentSemester = ConstantData.SemestersByName[student.Semester];
-                    if (currentSemester % 2 == 0)
-                    {
-                        currentSemester = _helper.GoToNextSemester(Hours, currentSemester);
-                    }
-                    else
-                    {
-                        currentSemester++;
-                    }
-                    var gpa = _helper.CalculateGPA(PassedCourses);
-                    student.Semester = ConstantData.SemestersByNumber[currentSemester];
-                    student.Gpa = gpa;
-                    await _unitOfWork.StudentRepo.Update(student);
-                    int isUpdated = await _unitOfWork.Complete();
-                    if (isAdded == 0)
-                    {
-                        throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
-                    }
-                }
+            var studentMap = new Dictionary<string, List<StudentCourse>>();
+
+            for (int i = 1; i <= rowCount; i++) // Assuming header is at row 0
+            {
+                var row = sheet.GetRow(i);
+                if (row == null) continue;
+
+                var studentId = row.GetCell(0)?.ToString()?.Trim();
+                var courseId = row.GetCell(1)?.ToString()?.Trim();
+                var finalGradeCell = row.GetCell(2);
+                var nonFinalGradeCell = row.GetCell(3);
+                var semester = row.GetCell(4)?.ToString()?.Trim();
+
+                if (string.IsNullOrEmpty(studentId) || string.IsNullOrEmpty(courseId))
+                    continue;
+
+                int gradeOfFinal = (finalGradeCell != null && int.TryParse(finalGradeCell.ToString(), out var final)) ? final : 0;
+                int gradeWithoutFinal = (nonFinalGradeCell != null && int.TryParse(nonFinalGradeCell.ToString(), out var nonFinal)) ? nonFinal : 0;
+
+                var result = new StudentCourse
+                {
+                    StudentId = studentId,
+                    CourseCode = courseId,
+                    Grade = gradeOfFinal + gradeWithoutFinal,
+                    Semester = semester,
+                    IsPassed = (gradeOfFinal >= 15 && (gradeOfFinal + gradeWithoutFinal >= 50))
+                };
+
+                await _unitOfWork.ResultRepo.Update(result);
+                int isAdded = await _unitOfWork.Complete();
+                if (isAdded == 0)
+                    throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
+
+                if (!studentMap.ContainsKey(studentId))
+                    studentMap[studentId] = new List<StudentCourse>();
+
+                studentMap[studentId].Add(result);
             }
 
-        }
+            foreach (var studentId in studentMap.Keys)
+            {
+                var student = await _unitOfWork.StudentRepo.GetByIdAsync(studentId);
+                if (student == null) continue;
 
+                var oldPassedCourses = await _unitOfWork.ResultRepo.GetAllAsync(r => r.IsPassed && r.StudentId == studentId);
+                var currentStudentCourses = studentMap[studentId];
+
+                int addedHours = 0;
+
+                foreach (var course in currentStudentCourses)
+                {
+                    if (course.IsPassed)
+                    {
+                        var wasPassedBefore = oldPassedCourses.Any(p => p.CourseCode == course.CourseCode);
+                        if (!wasPassedBefore)
+                        {
+                            var courseHours = await _unitOfWork.ResultRepo.GetHoursOfCourse(course.CourseCode);
+                            addedHours += courseHours;
+                        }
+                    }
+                }
+
+                int totalPassedHours = oldPassedCourses.Sum(p => p.Course.Hours) + addedHours;
+                int currentSemester = ConstantData.SemestersByName[student.Semester];
+                currentSemester = (currentSemester % 2 == 0)
+                    ? _helper.GoToNextSemester(totalPassedHours, currentSemester)
+                    : currentSemester + 1;
+
+                var allPassedCourses = oldPassedCourses.Concat(currentStudentCourses.Where(c => c.IsPassed)).ToList();
+                var gpa = await _helper.CalculateGPA(allPassedCourses);
+
+                student.Hours += addedHours;
+                student.Semester = ConstantData.SemestersByNumber[currentSemester];
+                student.Gpa = gpa;
+
+                await _unitOfWork.StudentRepo.Update(student);
+                int isUpdated = await _unitOfWork.Complete();
+
+                if (isUpdated == 0)
+                    throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Student Update"));
+            }
+        }
         public async Task<MessageResponseDto> DeleteCourse(ResultDeleteDto reseltDeleteDto)
         {
             var Course = _unitOfWork.ResultRepo.GetById(reseltDeleteDto.studentId, reseltDeleteDto.courseCode);

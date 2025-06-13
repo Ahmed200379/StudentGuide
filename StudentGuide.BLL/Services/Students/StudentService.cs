@@ -188,7 +188,7 @@ namespace StudentGuide.BLL.Services.Students
                     Grade=-1,
                     StudentId=student.Code,
                     IsPassed=false,
-                    Semester=student.Semester
+                    Semester =student.Semester
                 }).ToList();
             await _unitOfWork.StudentRepo.AddRangeAsync(studentCourses);
             int isAdded = await _unitOfWork.Complete();

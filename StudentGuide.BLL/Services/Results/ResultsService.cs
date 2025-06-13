@@ -194,6 +194,7 @@ namespace StudentGuide.BLL.Services.Results
                         StudentId = studentId,
                         CourseCode = courseId,
                         Grade = totalGrade,
+
                         Semester = semester,
                         IsPassed = isPassed
                     };

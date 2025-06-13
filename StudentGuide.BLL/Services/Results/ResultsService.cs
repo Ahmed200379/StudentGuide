@@ -173,19 +173,35 @@ namespace StudentGuide.BLL.Services.Results
 
                 int gradeOfFinal = (finalGradeCell != null && int.TryParse(finalGradeCell.ToString(), out var final)) ? final : 0;
                 int gradeWithoutFinal = (nonFinalGradeCell != null && int.TryParse(nonFinalGradeCell.ToString(), out var nonFinal)) ? nonFinal : 0;
+                int totalGrade = gradeOfFinal + gradeWithoutFinal;
+                bool isPassed = (gradeOfFinal >= 15 && totalGrade >= 50);
 
-                var result = new StudentCourse
+                var existing = await _unitOfWork.ResultRepo.GetByStudentAndCourseAsync(studentId, courseId);
+                StudentCourse result;
+
+                if (existing != null)
                 {
-                    StudentId = studentId,
-                    CourseCode = courseId,
-                    Grade = gradeOfFinal + gradeWithoutFinal,
-                    Semester = semester,
-                    IsPassed = (gradeOfFinal >= 15 && (gradeOfFinal + gradeWithoutFinal >= 50))
-                };
+                    existing.Grade = totalGrade;
+                    existing.Semester = semester;
+                    existing.IsPassed = isPassed;
+                    await _unitOfWork.ResultRepo.Update(existing);
+                    result = existing;
+                }
+                else
+                {
+                    result = new StudentCourse
+                    {
+                        StudentId = studentId,
+                        CourseCode = courseId,
+                        Grade = totalGrade,
+                        Semester = semester,
+                        IsPassed = isPassed
+                    };
+                    await _unitOfWork.ResultRepo.AddAsync(result);
+                }
 
-                await _unitOfWork.ResultRepo.Update(result);
-                int isAdded = await _unitOfWork.Complete();
-                if (isAdded == 0)
+                int isSaved = await _unitOfWork.Complete();
+                if (isSaved == 0)
                     throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Results"));
 
                 if (!studentMap.ContainsKey(studentId))
@@ -199,9 +215,10 @@ namespace StudentGuide.BLL.Services.Results
                 var student = await _unitOfWork.StudentRepo.GetByIdAsync(studentId);
                 if (student == null) continue;
 
-                var oldPassedCourses = await _unitOfWork.ResultRepo.GetAllAsync(r => r.IsPassed && r.StudentId == studentId);
-                var currentStudentCourses = studentMap[studentId];
+                var oldPassedCourses = (await _unitOfWork.ResultRepo
+                    .GetAllWithIncludeAsync(r => r.IsPassed && r.StudentId == studentId)).ToList();
 
+                var currentStudentCourses = studentMap[studentId];
                 int addedHours = 0;
 
                 foreach (var course in currentStudentCourses)
@@ -217,13 +234,19 @@ namespace StudentGuide.BLL.Services.Results
                     }
                 }
 
-                int totalPassedHours = oldPassedCourses.Sum(p => p.Course.Hours) + addedHours;
+                int totalPassedHours = oldPassedCourses
+                    .Where(p => p.Course != null)
+                    .Sum(p => p.Course.Hours) + addedHours;
+
                 int currentSemester = ConstantData.SemestersByName[student.Semester];
                 currentSemester = (currentSemester % 2 == 0)
                     ? _helper.GoToNextSemester(totalPassedHours, currentSemester)
                     : currentSemester + 1;
 
-                var allPassedCourses = oldPassedCourses.Concat(currentStudentCourses.Where(c => c.IsPassed)).ToList();
+                var allPassedCourses = oldPassedCourses
+                    .Concat(currentStudentCourses.Where(c => c.IsPassed))
+                    .ToList();
+
                 var gpa = await _helper.CalculateGPA(allPassedCourses);
 
                 student.Hours += addedHours;
@@ -237,6 +260,7 @@ namespace StudentGuide.BLL.Services.Results
                     throw new Exception(Exceptions.ExceptionMessages.GetAddFailedMessage("Student Update"));
             }
         }
+
         public async Task<MessageResponseDto> DeleteCourse(ResultDeleteDto reseltDeleteDto)
         {
             var Course = _unitOfWork.ResultRepo.GetById(reseltDeleteDto.studentId, reseltDeleteDto.courseCode);

@@ -41,5 +41,12 @@ namespace StudentGuide.DAL.Repos.ResultRepo
                 .Select(sc => sc.Course.Hours)
                 .FirstOrDefaultAsync();
         }
+        public async Task<StudentCourse> GetByStudentAndCourseAsync(string studentId, string courseCode)
+        {
+            return await _context.Set<StudentCourse>()
+                .Include(s => s.Course)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId && s.CourseCode == courseCode);
+        }
+
     }
 }

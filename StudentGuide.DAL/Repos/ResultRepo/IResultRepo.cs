@@ -15,6 +15,7 @@ namespace StudentGuide.DAL.Repos.ResultRepo
         public StudentCourse GetById(string studentId, string courseCode);
         public Task<IEnumerable<StudentCourse>> GetAllWithIncludeAsync(Expression<Func<StudentCourse, bool>>? expression = null);
         public Task<int> GetHoursOfCourse(string courseCode);
+        public Task<StudentCourse> GetByStudentAndCourseAsync(string studentId, string courseCode);
 
     }
 }

@@ -13,7 +13,7 @@ namespace StudentGuide.BLL.Dtos.Student
     {
         public string StudentId { get; set; } = string.Empty;
         public string StudentName { get; set; } = string.Empty;
-        public string StudentEmail { get; set; } = string.Empty;
+        public string StudentEmail { get; set; } = string.Empty; 
         public string StudentPassword { get; set; } = string.Empty;
         public DateTime BirthDateOfStudent { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;

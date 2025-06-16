@@ -15,9 +15,6 @@ namespace StudentGuide.BLL.Dtos.Student
         public string StudentName { get; set; } = string.Empty;
         public string StudentEmail { get; set; } = string.Empty;
         public string StudentPassword { get; set; } = string.Empty;
-        [AllowedExtention(ConstantData.AllowExtentions),
-            MaxSize(ConstantData.maxSizeByByets)]
-        public IFormFile StudentPhoto { get; set; } = default!;
         public DateTime BirthDateOfStudent { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string DepartmentCode { get; set; } = string.Empty;

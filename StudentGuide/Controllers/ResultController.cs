@@ -57,8 +57,8 @@ namespace StudentGuide.API.Controllers
             }
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("GetAllResultsForAllStudents")]
-        public async Task<IActionResult> GetAllResultsForAllStudents( [FromQuery]string semester)
+        [HttpGet("GetAllResultsForAllStudents/{semester}")]
+        public async Task<IActionResult> GetAllResultsForAllStudents(string semester)
         {
             try
             {

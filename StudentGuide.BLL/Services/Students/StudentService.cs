@@ -137,7 +137,6 @@ namespace StudentGuide.BLL.Services.Students
         public async Task EditStudent(StudentEditDto editStudent)
         {
             var student = await _unitOfWork.StudentRepo.GetByIdAsync(editStudent.StudentId);
-            var oldPhoto = student.Photo;
             if (student==null)
             {
                 throw new Exception("Student does not found");
@@ -145,10 +144,9 @@ namespace StudentGuide.BLL.Services.Students
             _helper.MapStudentEditDtoToStudent(editStudent, student);
            await _unitOfWork.StudentRepo.Update(student);
             int isUpdated = await _unitOfWork.Complete();
-            if(isUpdated >0)
+            if(isUpdated ==0)
             {
-                var photo = Path.Combine(ConstantData.ImagesPath, oldPhoto);
-                File.Delete(photo);
+                throw new Exception("Failed to update student");
             }
             else
             {

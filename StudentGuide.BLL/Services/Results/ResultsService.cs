@@ -88,7 +88,7 @@ namespace StudentGuide.BLL.Services.Results
                     StudentId = r.StudentId,
                     CourseName = r.Course.Name,
                     StudentName = r.Student.Name,
-
+                    Grade = r.Grade == -1 ? "Not Graded Yet" : _helper.GetGradeWithSymbol(r.Grade),
                 }).ToList();
                 return resultsDto;
             }

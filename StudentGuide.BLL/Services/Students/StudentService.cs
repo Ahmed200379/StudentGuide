@@ -81,7 +81,6 @@ namespace StudentGuide.BLL.Services.Students
             var students = await _unitOfWork.StudentRepo.GetAll();
             var studentDto = students.Select( s=> new StudentReadForAdminDto
             {
-
                 StudentName = s.Name,
                 StudentEmail = s.Email,
                 DepartmentName = s.Department.Name,
@@ -153,7 +152,6 @@ namespace StudentGuide.BLL.Services.Students
                 throw new Exception("Faild to update");
             }
         }
-
         public async Task EnrollCourses(StudentErollDto studentErollDto)
         {
             var enrolledCourses = await _unitOfWork.ResultRepo.GetAllAsync(c => c.StudentId==studentErollDto.StudentId);

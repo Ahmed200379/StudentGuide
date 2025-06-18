@@ -29,8 +29,8 @@ namespace StudentGuide.API.Controllers
             }
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("GetAllResultForAdmin")]
-        public async Task<IActionResult> GetAllResultForAdmin(ResultReadForResult specificUser)
+        [HttpPost("GetAllResultForAdmin")]
+        public async Task<IActionResult> GetAllResultForAdmin([FromBody]ResultReadForResult specificUser)
         {
             try
             {

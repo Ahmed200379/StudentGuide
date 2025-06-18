@@ -17,7 +17,6 @@ namespace StudentGuide.DAL.Data.Models
             [ForeignKey(nameof(Course))]
             public string CourseCode { get; set; }
             public Course Course { get; set; }
-
             public bool IsPassed { get; set; } = false;
 
             [Range(-1, 101)]

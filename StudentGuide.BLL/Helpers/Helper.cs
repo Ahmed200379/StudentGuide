@@ -50,7 +50,6 @@ namespace StudentGuide.API.Helpers
             student.Password = editStudent.StudentPassword;
             student.Gpa = 0;
             student.Hours = 0;
-            student.Photo = await SaveImage(editStudent.StudentPhoto);
             student.BirthDate = editStudent.BirthDateOfStudent;
             student.PhoneNumber = editStudent.PhoneNumber;
             student.Semester = "Semester1";

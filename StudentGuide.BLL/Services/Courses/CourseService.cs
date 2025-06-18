@@ -195,9 +195,7 @@ namespace StudentGuide.BLL.Services.Courses
             // Get courses based on the student's semester (even or odd)
             var allCourses = await _unitOfWork.CourseRepo.GetAllAsync();
             // Handling other semesters
-            var passedCourses = courses
-                .Where(c => c.Students.Any(s => s.StudentId == code && s.IsPassed))
-                .ToList();
+            var passedCourses = await _unitOfWork.ResultRepo.GetAllAsync(sc => sc.IsPassed == true && sc.StudentId == code);
             if (checkSemester % 2 == 0 && checkSemester != 0)
             {
                 courses = allCourses.Where(c =>
@@ -205,21 +203,29 @@ namespace StudentGuide.BLL.Services.Courses
             }
             else if (checkSemester % 2 != 0)
             {
-                courses = allCourses.Where(c =>
-                    c.Semesters.Any(s => ConstantData.SemestersByName.ContainsKey(s) && ConstantData.SemestersByName[s] % 2 != 0));
+                 courses = allCourses.Where(c =>
+     c.Semesters.Any(s =>
+         ConstantData.SemestersByName.ContainsKey(s) &&
+         ConstantData.SemestersByName[s] % 2 != 0)).ToList();
+
             }
             else
             {
                 courses = allCourses.Where(c => c.Semesters.Contains(student.Semester));
             }
-
+            var passedCourseCodes = passedCourses.Select(sc => sc.CourseCode).ToHashSet();
 
             // Handling semester 1 (Special Case)
             if (checkSemester == 1)
             {
+               
+
                 var availableCourses = courses
-                    .Where(c => c.Semesters.Contains(student.Semester))
-                    .Select(c=>_helper.MapToCourseReadDto(c))
+                    .Where(c =>
+                        c.Semesters.Contains(student.Semester) &&
+                        !passedCourseCodes.Contains(c.Code) // استبعاد الكورسات اللي الطالب نجح فيها
+                    )
+                    .Select(c => _helper.MapToCourseReadDto(c))
                     .ToList();
 
                 return new CourseReadForStudentDto
@@ -230,17 +236,13 @@ namespace StudentGuide.BLL.Services.Courses
                 };
             }
 
-            
-
-            var passedCoursesCode = passedCourses.Select(c => c.Code).ToList();
-
             var totalHoursForHumanCourses = passedCourses
-                .Where(c => c.CourseDepartments.Any(d => d.DepartmentsCode == "HM"))
-                .Sum(c => c.Hours);
+                .Where(c => c.Course.CourseDepartments.Any(d => d.DepartmentsCode == "HM"))
+                .Sum(c => c.Course.Hours);
 
             var totalHoursForElectiveCourses = passedCourses
-                .Where(c => !c.IsCompulsory)
-                .Sum(c => c.Hours);
+                .Where(c => !c.Course.IsCompulsory)
+                .Sum(c => c.Course.Hours);
 
             // Apply additional filters
             if (totalHoursForElectiveCourses >= 63)
@@ -255,8 +257,8 @@ namespace StudentGuide.BLL.Services.Courses
 
             var availableCoursesFiltered = courses
                 .Where(c => !c.Students.Any(s => s.StudentId == code && s.IsPassed)
-                    && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCoursesCode.Contains(p)))
-                    && c.CourseDepartments.Any(d => d.DepartmentsCode == departmentCodeForStudent || d.DepartmentsCode=="GN")
+                    && (c.PrerequisiteCourses.Count == 0 || c.PrerequisiteCourses.All(p => passedCourseCodes.Contains(p)))
+                    && c.CourseDepartments.Any(d => d.DepartmentsCode == departmentCodeForStudent || d.DepartmentsCode == "GN")
                     )
                 .Select(c => _helper.MapToCourseReadDto(c))
                 .ToList();

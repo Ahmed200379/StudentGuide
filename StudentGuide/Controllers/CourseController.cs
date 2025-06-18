@@ -136,7 +136,7 @@ namespace StudentGuide.API.Controllers
         }
         [Authorize(Roles = "Student,Admin")]
         [HttpGet]
-        [Route("GetAllAvalibleCourses")]
+        [Route("GetAllAvalibleCourses/{code}")]
         public async Task<IActionResult> GetAllAvailableCourses(string code)
         {
             try
